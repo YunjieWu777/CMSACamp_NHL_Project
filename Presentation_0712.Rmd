@@ -59,13 +59,8 @@ powerplay <-
   recent_season %>%
   filter(xCordAdjusted %in% c(25:89),
          yCordAdjusted %in% c(-42:42)) %>% 
-  filter((homeSkatersOnIce == 4 | awaySkatersOnIce == 4),
-         (homeSkatersOnIce == 5 | awaySkatersOnIce == 5),
-          (homeSkatersOnIce > 3),
-          (homeSkatersOnIce < 6),
-          (awaySkatersOnIce > 3),
-          (awaySkatersOnIce < 6),
-          )
+  filter((homeSkatersOnIce == 4 & awaySkatersOnIce == 5),
+         (homeSkatersOnIce == 5 & awaySkatersOnIce == 4))
 
 dat_list = split(recent_season, recent_season$season)
   
@@ -86,90 +81,118 @@ freeze_logit_odd <- glm(shotGoalieFroze ~ shotAngleAdjusted+arenaAdjustedShotDis
 
 ## The problem
 
+<<<<<<< HEAD
 * <p> How do different shot angles and distances impact the outcome of the shot? </p>
 * <p> Now including variables: Shot type, whether or not the shot was on a rush, whether or not the shot was a rebound </p>
 * <p> Looking first at only shots in 5 on 5 situations
 
+=======
+- 
+-
+-
+>>>>>>> 23752bd49bbc224bed7346c2020db59c33ab59b0
 
 ---
 
-## Goal
+### Goal
 
 ```{r}
 xG_logit_even <- glm(goal ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
+```
 
-summary(xG_logit_even)
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/xG_logit_even.png")
 ```
 
 ---
 
-## Rebound 
+### Rebound 
 
 ```{r}
 reb_logit_even <- glm(shotGeneratedRebound ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(reb_logit_even)
 ```
 
 
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/reb_logit_even.png")
+```
+
 ---
 
-## Freeze
+### Freeze
 
 ```{r}
 froze_logit_even <- glm(shotGoalieFroze ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(froze_logit_even)
+```
+
+
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/froze_logit_even.png")
 ```
 
 ---
 
-## InZone
+### InZone
 
 ```{r}
 inZone_logit_even <- glm(shotPlayContinuedInZone ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(inZone_logit_even)
+```
+
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/inZone_logit_even.png")
 ```
 
 ---
 
-## OutofZone
+### OutofZone
 
 ```{r}
 outZone_logit_even <- glm(shotPlayContinuedOutsideZone ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(outZone_logit_even)
+
 ```
 
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/outZone_logit_even.png")
+```
 
 ---
 
-## Stopped
+### Stopped
 
 ```{r}
 stop_logit_even <- glm(shotPlayStopped ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(stop_logit_even)
+```
+
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/stop_logit_even.png")
 ```
 
 ---
 
 
-## ShotOnGoal%
+### ShotOnGoal
 
 ```{r}
 shotOnGoal_logit_even <- glm(shotWasOnGoal ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(shotOnGoal_logit_even)
+```
+
+
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/shotOnGoal_logit_even.png")
 ```
 
 ---

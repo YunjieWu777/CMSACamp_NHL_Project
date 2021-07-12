@@ -31,263 +31,71 @@ class: center, middle, inverse, title-slide
 
 ## The problem
 
----
-
-## Goal
-
-
-```
-## 
-## Call:
-## glm(formula = goal ~ shotAngleAdjusted + arenaAdjustedShotDistance + 
-##     shotType + shotRush + shotRebound, family = binomial("logit"), 
-##     data = evenstrength)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.4286  -0.3787  -0.2552  -0.1797   3.6097  
-## 
-## Coefficients:
-##                             Estimate Std. Error  z value Pr(&gt;|z|)    
-## (Intercept)                0.5081784  0.3814750    1.332  0.18281    
-## shotAngleAdjusted         -0.0162888  0.0002422  -67.259  &lt; 2e-16 ***
-## arenaAdjustedShotDistance -0.0583405  0.0004029 -144.813  &lt; 2e-16 ***
-## shotTypeBACK              -1.6367690  0.3815930   -4.289 1.79e-05 ***
-## shotTypeDEFL              -1.6256581  0.3822179   -4.253 2.11e-05 ***
-## shotTypeSLAP              -0.7802208  0.3816877   -2.044  0.04094 *  
-## shotTypeSNAP              -0.9175602  0.3815146   -2.405  0.01617 *  
-## shotTypeTIP               -1.6342341  0.3816312   -4.282 1.85e-05 ***
-## shotTypeWRAP              -2.1937805  0.3844187   -5.707 1.15e-08 ***
-## shotTypeWRIST             -1.2418919  0.3813673   -3.256  0.00113 ** 
-## shotRush                   0.5515398  0.0748829    7.365 1.77e-13 ***
-## shotRebound                0.7756796  0.0142195   54.550  &lt; 2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 380861  on 863448  degrees of freedom
-## Residual deviance: 339078  on 863437  degrees of freedom
-## AIC: 339102
-## 
-## Number of Fisher Scoring iterations: 6
-```
+- 
+-
+-
 
 ---
 
-## Rebound 
+### Goal
 
 
-```
-## 
-## Call:
-## glm(formula = shotGeneratedRebound ~ shotAngleAdjusted + arenaAdjustedShotDistance + 
-##     shotType + shotRush + shotRebound, family = binomial("logit"), 
-##     data = evenstrength)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -0.9284  -0.3440  -0.3008  -0.2666   2.9764  
-## 
-## Coefficients:
-##                             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)               -0.5040153  0.3484826  -1.446  0.14809    
-## shotAngleAdjusted         -0.0043877  0.0002502 -17.534  &lt; 2e-16 ***
-## arenaAdjustedShotDistance -0.0212409  0.0003663 -57.994  &lt; 2e-16 ***
-## shotTypeBACK              -1.7433584  0.3486155  -5.001 5.71e-07 ***
-## shotTypeDEFL              -2.1382639  0.3501334  -6.107 1.02e-09 ***
-## shotTypeSLAP              -1.4592697  0.3485627  -4.187 2.83e-05 ***
-## shotTypeSNAP              -1.8170639  0.3485568  -5.213 1.86e-07 ***
-## shotTypeTIP               -1.9879481  0.3488445  -5.699 1.21e-08 ***
-## shotTypeWRAP              -1.2933687  0.3500120  -3.695  0.00022 ***
-## shotTypeWRIST             -1.5803392  0.3483023  -4.537 5.70e-06 ***
-## shotRush                   0.1520320  0.0958904   1.585  0.11286    
-## shotRebound                0.2658135  0.0187426  14.182  &lt; 2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 340902  on 863448  degrees of freedom
-## Residual deviance: 335361  on 863437  degrees of freedom
-## AIC: 335385
-## 
-## Number of Fisher Scoring iterations: 6
-```
 
+&lt;img src="Presentation_0712_files/xG_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-## Freeze
+### Rebound 
 
 
-```
-## 
-## Call:
-## glm(formula = shotGoalieFroze ~ shotAngleAdjusted + arenaAdjustedShotDistance + 
-##     shotType + shotRush + shotRebound, family = binomial("logit"), 
-##     data = evenstrength)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.2537  -0.6492  -0.5931  -0.5177   2.3762  
-## 
-## Coefficients:
-##                             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)               -2.9315734  0.5239203  -5.595  2.2e-08 ***
-## shotAngleAdjusted          0.0014127  0.0001506   9.380  &lt; 2e-16 ***
-## arenaAdjustedShotDistance  0.0136364  0.0002025  67.343  &lt; 2e-16 ***
-## shotTypeBACK               0.9060217  0.5239454   1.729   0.0838 .  
-## shotTypeDEFL               0.5603862  0.5243762   1.069   0.2852    
-## shotTypeSLAP               0.6177588  0.5238947   1.179   0.2383    
-## shotTypeSNAP               0.9032437  0.5238900   1.724   0.0847 .  
-## shotTypeTIP                0.5964096  0.5240409   1.138   0.2551    
-## shotTypeWRAP               0.8309697  0.5247153   1.584   0.1133    
-## shotTypeWRIST              0.8389432  0.5238529   1.601   0.1093    
-## shotRush                   0.5100717  0.0535267   9.529  &lt; 2e-16 ***
-## shotRebound                0.7080292  0.0118895  59.551  &lt; 2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 799978  on 863448  degrees of freedom
-## Residual deviance: 791043  on 863437  degrees of freedom
-## AIC: 791067
-## 
-## Number of Fisher Scoring iterations: 4
-```
+
+
+&lt;img src="Presentation_0712_files/reb_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-## InZone
+### Freeze
 
 
-```
-## 
-## Call:
-## glm(formula = shotPlayContinuedInZone ~ shotAngleAdjusted + arenaAdjustedShotDistance + 
-##     shotType + shotRush + shotRebound, family = binomial("logit"), 
-##     data = evenstrength)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.0099  -0.8939  -0.8655   1.4774   2.0358  
-## 
-## Coefficients:
-##                             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)               -1.4589383  0.3560563  -4.097 4.18e-05 ***
-## shotAngleAdjusted          0.0015321  0.0001212  12.639  &lt; 2e-16 ***
-## arenaAdjustedShotDistance  0.0033706  0.0001660  20.308  &lt; 2e-16 ***
-## shotTypeBACK               0.6210752  0.3560868   1.744   0.0811 .  
-## shotTypeDEFL               0.6807548  0.3563469   1.910   0.0561 .  
-## shotTypeSLAP               0.5378258  0.3560453   1.511   0.1309    
-## shotTypeSNAP               0.4804523  0.3560438   1.349   0.1772    
-## shotTypeTIP                0.7038908  0.3561258   1.977   0.0481 *  
-## shotTypeWRAP               0.7061536  0.3566697   1.980   0.0477 *  
-## shotTypeWRIST              0.5432464  0.3560031   1.526   0.1270    
-## shotRush                  -0.5166070  0.0591866  -8.728  &lt; 2e-16 ***
-## shotRebound               -0.5323368  0.0121977 -43.642  &lt; 2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 1080020  on 863448  degrees of freedom
-## Residual deviance: 1076553  on 863437  degrees of freedom
-## AIC: 1076577
-## 
-## Number of Fisher Scoring iterations: 4
-```
+
+
+&lt;img src="Presentation_0712_files/froze_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-## OutofZone
+### InZone
 
 
-```
-## 
-## Call:
-## glm(formula = shotPlayContinuedOutsideZone ~ shotAngleAdjusted + 
-##     arenaAdjustedShotDistance + shotType + shotRush + shotRebound, 
-##     family = binomial("logit"), data = evenstrength)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.1270  -0.9914  -0.9457   1.3649   1.9421  
-## 
-## Coefficients:
-##                             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)               -1.3896454  0.3444740  -4.034 5.48e-05 ***
-## shotAngleAdjusted          0.0028953  0.0001168  24.790  &lt; 2e-16 ***
-## arenaAdjustedShotDistance  0.0039179  0.0001599  24.507  &lt; 2e-16 ***
-## shotTypeBACK               0.6990557  0.3445044   2.029   0.0424 *  
-## shotTypeDEFL               0.8223727  0.3447551   2.385   0.0171 *  
-## shotTypeSLAP               0.7164529  0.3444623   2.080   0.0375 *  
-## shotTypeSNAP               0.6653937  0.3444601   1.932   0.0534 .  
-## shotTypeTIP                0.7776818  0.3445435   2.257   0.0240 *  
-## shotTypeWRAP               0.6716032  0.3450907   1.946   0.0516 .  
-## shotTypeWRIST              0.6563236  0.3444223   1.906   0.0567 .  
-## shotRush                  -0.2812945  0.0529355  -5.314 1.07e-07 ***
-## shotRebound               -0.7223999  0.0119992 -60.204  &lt; 2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 1142513  on 863448  degrees of freedom
-## Residual deviance: 1135974  on 863437  degrees of freedom
-## AIC: 1135998
-## 
-## Number of Fisher Scoring iterations: 4
-```
 
+&lt;img src="Presentation_0712_files/inZone_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-## Stopped
+### OutofZone
 
 
-```
-## 
-## Call:
-## glm(formula = shotPlayStopped ~ shotAngleAdjusted + arenaAdjustedShotDistance + 
-##     shotType + shotRush + shotRebound, family = binomial("logit"), 
-##     data = evenstrength)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -0.4279  -0.2263  -0.2218  -0.2157   2.9740  
-## 
-## Coefficients:
-##                             Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)               -3.3117152  0.7229252  -4.581 4.63e-06 ***
-## shotAngleAdjusted          0.0017525  0.0003618   4.844 1.27e-06 ***
-## arenaAdjustedShotDistance  0.0027395  0.0004959   5.524 3.31e-08 ***
-## shotTypeBACK              -0.7307146  0.7231272  -1.010    0.312    
-## shotTypeDEFL              -0.1049074  0.7237767  -0.145    0.885    
-## shotTypeSLAP              -0.5624493  0.7228751  -0.778    0.437    
-## shotTypeSNAP              -0.5099199  0.7228518  -0.705    0.481    
-## shotTypeTIP               -0.2415751  0.7231277  -0.334    0.738    
-## shotTypeWRAP              -1.1231378  0.7279849  -1.543    0.123    
-## shotTypeWRIST             -0.5616570  0.7226829  -0.777    0.437    
-## shotRush                   0.4683362  0.1184950   3.952 7.74e-05 ***
-## shotRebound                0.4810171  0.0276105  17.422  &lt; 2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 201115  on 863448  degrees of freedom
-## Residual deviance: 200547  on 863437  degrees of freedom
-## AIC: 200571
-## 
-## Number of Fisher Scoring iterations: 6
-```
+
+&lt;img src="Presentation_0712_files/outZone_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Stopped
+
+
+
+&lt;img src="Presentation_0712_files/stop_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 
+<<<<<<< HEAD
+### ShotOnGoal
+
+
+
+
+&lt;img src="Presentation_0712_files/shotOnGoal_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
+=======
 ## ShotOnGoal%
 
 
@@ -331,6 +139,7 @@ class: center, middle, inverse, title-slide
 ---
 
 ## Heat Maps for the Models
+>>>>>>> 4330d0c72f107e82891414c4802c5542b045d302
 
 ---
 
