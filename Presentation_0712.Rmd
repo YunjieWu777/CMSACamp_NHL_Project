@@ -59,13 +59,8 @@ powerplay <-
   recent_season %>%
   filter(xCordAdjusted %in% c(25:89),
          yCordAdjusted %in% c(-42:42)) %>% 
-  filter((homeSkatersOnIce == 4 | awaySkatersOnIce == 4),
-         (homeSkatersOnIce == 5 | awaySkatersOnIce == 5),
-          (homeSkatersOnIce > 3),
-          (homeSkatersOnIce < 6),
-          (awaySkatersOnIce > 3),
-          (awaySkatersOnIce < 6),
-          )
+  filter((homeSkatersOnIce == 4 & awaySkatersOnIce == 5),
+         (homeSkatersOnIce == 5 & awaySkatersOnIce == 4))
 
 dat_list = split(recent_season, recent_season$season)
   
@@ -81,10 +76,9 @@ dat_list = split(recent_season, recent_season$season)
 xG_logit_even <- glm(goal ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-
-summary(xG_logit_even)
 ```
 
+![](Presentation_0712_files/xG_logit_even.png)
 ---
 
 ## Rebound 
@@ -93,9 +87,9 @@ summary(xG_logit_even)
 reb_logit_even <- glm(shotGeneratedRebound ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(reb_logit_even)
 ```
 
+![](Presentation_0712_files/reb_logit_even.png)
 
 ---
 
@@ -105,8 +99,9 @@ summary(reb_logit_even)
 froze_logit_even <- glm(shotGoalieFroze ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(froze_logit_even)
 ```
+
+![](Presentation_0712_files/froze_logit_even.png)
 
 ---
 
@@ -116,8 +111,9 @@ summary(froze_logit_even)
 inZone_logit_even <- glm(shotPlayContinuedInZone ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(inZone_logit_even)
 ```
+
+![](Presentation_0712_files/inZone_logit_even.png)
 
 ---
 
@@ -127,9 +123,10 @@ summary(inZone_logit_even)
 outZone_logit_even <- glm(shotPlayContinuedOutsideZone ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(outZone_logit_even)
+
 ```
 
+![](Presentation_0712_files/outZone_logit_even.png)
 
 ---
 
@@ -139,8 +136,9 @@ summary(outZone_logit_even)
 stop_logit_even <- glm(shotPlayStopped ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(stop_logit_even)
 ```
+
+![](Presentation_0712_files/stop_logit_even.png)
 
 ---
 
@@ -151,7 +149,8 @@ summary(stop_logit_even)
 shotOnGoal_logit_even <- glm(shotWasOnGoal ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                data = evenstrength,
                family = binomial("logit"))
-summary(shotOnGoal_logit_even)
 ```
+
+![](Presentation_0712_files/shotOnGoal_logit_even.png)
 
 ---
