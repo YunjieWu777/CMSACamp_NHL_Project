@@ -68,9 +68,13 @@ dat_list = split(recent_season, recent_season$season)
 
 ## The probelm
 
+- 
+-
+-
+
 ---
 
-## Goal
+### Goal
 
 ```{r}
 xG_logit_even <- glm(goal ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
@@ -78,10 +82,13 @@ xG_logit_even <- glm(goal ~                        shotAngleAdjusted+arenaAdjust
                family = binomial("logit"))
 ```
 
-![](Presentation_0712_files/xG_logit_even.png)
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/xG_logit_even.png")
+```
+
 ---
 
-## Rebound 
+### Rebound 
 
 ```{r}
 reb_logit_even <- glm(shotGeneratedRebound ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
@@ -89,11 +96,14 @@ reb_logit_even <- glm(shotGeneratedRebound ~                        shotAngleAdj
                family = binomial("logit"))
 ```
 
-![](Presentation_0712_files/reb_logit_even.png)
+
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/reb_logit_even.png")
+```
 
 ---
 
-## Freeze
+### Freeze
 
 ```{r}
 froze_logit_even <- glm(shotGoalieFroze ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
@@ -101,11 +111,14 @@ froze_logit_even <- glm(shotGoalieFroze ~                        shotAngleAdjust
                family = binomial("logit"))
 ```
 
-![](Presentation_0712_files/froze_logit_even.png)
+
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/froze_logit_even.png")
+```
 
 ---
 
-## InZone
+### InZone
 
 ```{r}
 inZone_logit_even <- glm(shotPlayContinuedInZone ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
@@ -113,11 +126,13 @@ inZone_logit_even <- glm(shotPlayContinuedInZone ~                        shotAn
                family = binomial("logit"))
 ```
 
-![](Presentation_0712_files/inZone_logit_even.png)
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/inZone_logit_even.png")
+```
 
 ---
 
-## OutofZone
+### OutofZone
 
 ```{r}
 outZone_logit_even <- glm(shotPlayContinuedOutsideZone ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
@@ -126,11 +141,13 @@ outZone_logit_even <- glm(shotPlayContinuedOutsideZone ~                        
 
 ```
 
-![](Presentation_0712_files/outZone_logit_even.png)
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/outZone_logit_even.png")
+```
 
 ---
 
-## Stopped
+### Stopped
 
 ```{r}
 stop_logit_even <- glm(shotPlayStopped ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
@@ -138,12 +155,14 @@ stop_logit_even <- glm(shotPlayStopped ~                        shotAngleAdjuste
                family = binomial("logit"))
 ```
 
-![](Presentation_0712_files/stop_logit_even.png)
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/stop_logit_even.png")
+```
 
 ---
 
 
-## ShotOnGoal%
+### ShotOnGoal
 
 ```{r}
 shotOnGoal_logit_even <- glm(shotWasOnGoal ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
@@ -151,6 +170,9 @@ shotOnGoal_logit_even <- glm(shotWasOnGoal ~                        shotAngleAdj
                family = binomial("logit"))
 ```
 
-![](Presentation_0712_files/shotOnGoal_logit_even.png)
+
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("Presentation_0712_files/shotOnGoal_logit_even.png")
+```
 
 ---
