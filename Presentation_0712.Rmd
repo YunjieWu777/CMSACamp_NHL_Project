@@ -86,6 +86,11 @@ freeze_logit_odd <- glm(shotGoalieFroze ~ shotAngleAdjusted+arenaAdjustedShotDis
 
 ## The problem
 
+* <p> How do different shot angles and distances impact the outcome of the shot? </p>
+* <p> Now including variables: Shot type, whether or not the shot was on a rush, whether or not the shot was a rebound </p>
+* <p> Looking first at only shots in 5 on 5 situations
+
+
 ---
 
 ## Goal
@@ -173,7 +178,7 @@ summary(shotOnGoal_logit_even)
 
 ---
 
-## Expected Goal
+## 5 on 5 Heat Maps
 
 ```{r}
 source('rink.r')  
@@ -278,7 +283,7 @@ plot7 <-  g +
   theme_bw()
 
 gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, plot7,
-             nrow = 3)
+                        nrow = 3)
 
 
 ```
