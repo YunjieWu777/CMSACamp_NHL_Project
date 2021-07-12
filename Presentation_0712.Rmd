@@ -66,7 +66,20 @@ dat_list = split(recent_season, recent_season$season)
   
 ```
 
-## The probelm
+```{r}
+xg_logit_odd <- glm(goal ~ shotAngleAdjusted+arenaAdjustedShotDistance,
+                     data = powerplay,
+                     family = binomial("logit"))
+reb_logit_odd <- glm(shotGeneratedRebound ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
+               data = powerplay,
+               family = binomial("logit"))
+freeze_logit_odd <- glm(shotGoalieFroze ~ shotAngleAdjusted+arenaAdjustedShotDistance,
+                    data = powerplay,
+                    family = binomial("logit")) 
+```
+
+
+## The problem
 
 - 
 -
@@ -176,3 +189,132 @@ knitr::include_graphics("Presentation_0712_files/shotOnGoal_logit_even.png")
 ```
 
 ---
+
+## Heat Maps for the Models
+
+---
+
+## Expected Goal
+
+```{r}
+source('rink.r')  
+g <- rink 
+plot1 <- g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = xG_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+   ylim(25, 100) +
+  theme_bw()
+ 
+plot2 <- g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = reb_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+   ylim(25, 100) +
+  theme_bw()
+
+plot3 <- g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = froze_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+   ylim(25, 100) +
+  theme_bw()
+
+plot4 <-
+   g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = inZone_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+   ylim(25, 100) +
+  theme_bw()
+
+plot5 <-g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = outZone_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+   ylim(25, 100) +
+  theme_bw()
+
+plot6 <- g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = stop_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+   ylim(25, 100) +
+  theme_bw()
+ 
+plot7 <-  g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = shotOnGoal_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+   ylim(25, 100) +
+  theme_bw()
+
+gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, plot7,
+             nrow = 3)
+
+
+```
+
+
+
+---
+
+# Goalie Freeze
+
+
+
+
+
+
+
+
+
