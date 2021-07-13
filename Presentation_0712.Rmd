@@ -55,18 +55,22 @@ evenstrength <-
          yCordAdjusted %in% c(-42:42)) %>% 
   filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
 
-powerplay <-
-  recent_season %>%
-  filter(xCordAdjusted %in% c(25:89),
-         yCordAdjusted %in% c(-42:42)) %>% 
-  filter((homeSkatersOnIce == 4 & awaySkatersOnIce == 5),
-         (homeSkatersOnIce == 5 & awaySkatersOnIce == 4))
 
 dat_list = split(recent_season, recent_season$season)
   
 ```
 
 ```{r}
+powerplay <-
+  recent_season %>%
+  filter((homeSkatersOnIce == 4 | awaySkatersOnIce == 4),
+         (homeSkatersOnIce == 5 | awaySkatersOnIce == 5),
+          (homeSkatersOnIce > 3),
+          (homeSkatersOnIce < 6),
+          (awaySkatersOnIce > 3),
+          (awaySkatersOnIce < 6),
+          )
+
 xg_logit_odd <- glm(goal ~ shotAngleAdjusted+arenaAdjustedShotDistance,
                      data = powerplay,
                      family = binomial("logit"))
@@ -81,16 +85,10 @@ freeze_logit_odd <- glm(shotGoalieFroze ~ shotAngleAdjusted+arenaAdjustedShotDis
 
 ## The problem
 
-<<<<<<< HEAD
 * <p> How do different shot angles and distances impact the outcome of the shot? </p>
 * <p> Now including variables: Shot type, whether or not the shot was on a rush, whether or not the shot was a rebound </p>
-* <p> Looking first at only shots in 5 on 5 situations
+* <p> Looking first at only shots in 5 on 5 situations </p.
 
-=======
-- 
--
--
->>>>>>> 23752bd49bbc224bed7346c2020db59c33ab59b0
 
 ---
 
@@ -197,13 +195,13 @@ knitr::include_graphics("Presentation_0712_files/shotOnGoal_logit_even.png")
 
 ---
 
-## Heat Maps for the Models
+### Heat Maps for the Models
 
 ---
 
-## 5 on 5 Heat Maps
+### 5 on 5 Heat Maps
 
-```{r}
+```{r echo=FALSE,fig.align="center", fig.show="hold", out.width="80%",fig.width = 9, fig.height = 7}
 source('rink.r')  
 g <- rink 
 plot1 <- g + 
@@ -217,6 +215,7 @@ plot1 <- g +
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
+  labs(title = "Expected Goal") +
    ylim(25, 100) +
   theme_bw()
  
@@ -232,6 +231,7 @@ plot2 <- g +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
    ylim(25, 100) +
+  labs(title = "Rebound") +
   theme_bw()
 
 plot3 <- g + 
@@ -245,6 +245,7 @@ plot3 <- g +
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
+  labs(title = "Goalie Froze") +
    ylim(25, 100) +
   theme_bw()
 
@@ -259,7 +260,8 @@ plot4 <-
                    color = "black",
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
-                      high = "darkorange") +
+                      high = "darkorange")  +
+  labs(title = "Play in Zone") +
    ylim(25, 100) +
   theme_bw()
 
@@ -274,6 +276,7 @@ plot5 <-g +
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
+  labs(title = "Play Out Zone") +
    ylim(25, 100) +
   theme_bw()
 
@@ -288,6 +291,7 @@ plot6 <- g +
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
+  labs(title = "Goalie Stop") +
    ylim(25, 100) +
   theme_bw()
  
@@ -302,6 +306,7 @@ plot7 <-  g +
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
+  labs(title = "Shot on Goal") +
    ylim(25, 100) +
   theme_bw()
 
@@ -313,9 +318,6 @@ gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, plot7,
 
 
 
----
-
-# Goalie Freeze
 
 
 
