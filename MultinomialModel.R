@@ -1,6 +1,8 @@
 # PURPOSE: Tasks for Week 7
 
 library(tidyverse)
+library(foreign)
+library(reshape2)
 
 
 # Reading in the data -----------------------------------------------------
@@ -91,10 +93,35 @@ allmean <-
 
 allmean[, c("pred.prob")] <- predict(test, newdata = allmean, type = "probs")
 
+# prog2 ~ ses + write, data = ml
 
 
 
+# Predicted probabilities for shot type -----------------------------------
 
 
+dshot <- data.frame(shotType = c("BACK", "DEFL", "SLAP",
+                                 "SNAP", "TIP", "WRAP",
+                                 "WRIST"), 
+                    shotAngleAdjusted = rep(mean(ongoal$shotAngleAdjusted)),
+                    arenaAdjustedShotDistance = rep(mean(ongoal$arenaAdjustedShotDistance)),
+                    shotRush = rep(mean(ongoal$shotRush)),
+                    shotRebound = rep(mean(ongoal$shotRebound))
+                    )
+
+predict(test, newdata = dshot, "probs")
+
+
+dangle <- data.frame(shotType = rep(c("BACK", "DEFL", "SLAP",
+                                  "SNAP", "TIP", "WRAP",
+                                  "WRIST")), 
+          shotAngleAdjusted = rep(c(0:90), 7),
+          arenaAdjustedShotDistance = rep(mean(ongoal$arenaAdjustedShotDistance)),
+          shotRush = rep(mean(ongoal$shotRush)),
+          shotRebound = rep(mean(ongoal$shotRebound)))
+
+ppangle <- cbind(dangle, predict(test, newdata = dangle, type = "probs"))
+
+by(ppangle[, 2:5], ppangle$shotType, colMeans)
 
 

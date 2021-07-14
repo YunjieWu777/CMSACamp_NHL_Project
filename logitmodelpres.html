@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Initial Tasks with Moneypuck Data</title>
+    <title>Multinomial Logit Shot Outcome Model</title>
     <meta charset="utf-8" />
     <meta name="author" content="Claire Dudley" />
     <meta name="author" content="Ruby Wu" />
+    <script src="logitmodelpres_files/header-attrs/header-attrs.js"></script>
+    <script src="logitmodelpres_files/htmlwidgets/htmlwidgets.js"></script>
+    <script src="logitmodelpres_files/viz/viz.js"></script>
+    <link href="logitmodelpres_files/DiagrammeR-styles/styles.css" rel="stylesheet" />
+    <script src="logitmodelpres_files/grViz-binding/grViz.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Initial Tasks with Moneypuck Data
+# Multinomial Logit Shot Outcome Model
 ### Claire Dudley
 ### Ruby Wu
 ### July 12th, 2021
@@ -26,97 +31,33 @@ class: center, middle, inverse, title-slide
 
 
 
+## The Problem
 
-## The problem
-
-* &lt;p&gt; How do different shot angles and distances impact the outcome of the shot? &lt;/p&gt;
-* &lt;p&gt; Now including variables: Shot type, whether or not the shot was on a rush, whether or not the shot was a rebound &lt;/p&gt;
-* &lt;p&gt; Looking first at only shots in 5 on 5 situations &lt;/p.
-
+* &lt;p&gt; Our Question: How do different shot angles and distances impact the outcome of the shot? &lt;/p&gt;
+* &lt;p&gt; Have been looking different models for each outcome &lt;/p&gt;
+* &lt;p&gt; Now want to see a model that incorporates multiple outcomes &lt;/p&gt;
 
 ---
 
-### Goal
+### Flowchart of Shot Outcomes
 
-
-
-&lt;img src="Presentation_0712_files/xG_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
-
----
-
-### Rebound 
-
-
-
-
-&lt;img src="Presentation_0712_files/reb_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
+<div id="htmlwidget-67dacc5651bbb34938a3" style="width:80%;height:504px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-67dacc5651bbb34938a3">{"x":{"diagram":"digraph flowchart {\n      node [ fontname = TimesNewRoman, shape = rectangle, color = Lavender, style = filled]\n      tab1 [label = \"Did the Shot Hit the Net?\"]\n      tab2 [label = \"Shot on Net\"]\n      tab3 [label = \"Shot Misses Net\"]\n      tab4 [label = \"Play Continued in Zone\"]\n      tab5 [label = \"Play Continued Outside Zone\"]\n      tab6 [label = \"Goal\"]\n      tab7 [label = \"Not a Goal\"]\n      tab8 [label = \"Goalie Freezes Puck\"]\n      tab9 [label = \"Shot Generates Rebound\"]\n      tab10 [label = \"Play Continued in Zone\"]\n      tab11 [label = \"Play Continued Outside Zone\"]\n      tab12 [label = \"Stoppage of Play\"]\n      \n      tab1 -> tab2;\n      tab1 -> tab3;\n      tab3 -> tab4;\n      tab3 -> tab5;\n      tab2 -> tab6;\n      tab2 -> tab7;\n      tab7 -> tab8;\n      tab7 -> tab9;\n      tab7 -> tab10;\n      tab7 -> tab11;\n      tab7 -> tab12;\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
-### Freeze
+### Multinomial Logit Model
 
-
-
-
-&lt;img src="Presentation_0712_files/froze_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
-
----
-
-### InZone
-
-
-
-&lt;img src="Presentation_0712_files/inZone_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
-
----
-
-### OutofZone
-
-
-
-&lt;img src="Presentation_0712_files/outZone_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
-
----
-
-### Stopped
-
-
-
-&lt;img src="Presentation_0712_files/stop_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
+&lt;img src="test.png" width="55%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 
-### ShotOnGoal
+### Relative Risk Ratios of Model
 
+* Exponentiated value of the logit coefficients
 
-
-
-&lt;img src="Presentation_0712_files/shotOnGoal_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
-
----
-
-<<<<<<< HEAD
-### Heat Maps for the Models
-
----
-
-### 5 on 5 Heat Maps
-=======
-## Heat Maps for the Models
-
----
-
-## Expected Goal
-
-&lt;img src="Presentation_0712_files/figure-html/unnamed-chunk-16-1.png" width="504" /&gt;
->>>>>>> 17b7523ffe91a21e006852d5c224bfd49b523bd3
-
-&lt;img src="Presentation_0712_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
-
-
-
-<<<<<<< HEAD
+&lt;img src="testrrr.png" width="55%" style="display: block; margin: auto;" /&gt;
 
 
 
@@ -126,9 +67,12 @@ class: center, middle, inverse, title-slide
 
 
 
-=======
-# Goalie Freeze
->>>>>>> 17b7523ffe91a21e006852d5c224bfd49b523bd3
+
+
+
+
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
