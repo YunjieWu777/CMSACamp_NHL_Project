@@ -1,10 +1,8 @@
 # Load packages and data --------------------------------------------------
 library(tidyverse)
-<<<<<<< HEAD
-=======
+library(ggthemes)
 library(haven)
 library(nnet)
->>>>>>> 17b7523ffe91a21e006852d5c224bfd49b523bd3
 library(sjPlot)
 shots2020 <- read_csv("data/shots_2020.csv")
 shots0719 <- read.csv("data/shots_2007-2019.csv")
@@ -12,14 +10,22 @@ shots0719 <- read.csv("data/shots_2007-2019.csv")
 # Filter data -------------------------------------------------------------
 shots1019 <- shots0719 %>% 
   filter(season>2009)
-variable<- c("arenaAdjustedShotDistance","shotWasOnGoal","shotPlayStopped","shotAngle","shotGoalieFroze","shotPlayContinuedInZone","shotPlayContinuedOutsideZone","awaySkatersOnIce","homeSkatersOnIce","season","shotAngleAdjusted","arenaAdjustedShotDistance","goal","shotGeneratedRebound", "xCordAdjusted", "yCordAdjusted","shotType","shotRush","shotRebound")
+variable<- c("xGoal","arenaAdjustedShotDistance","shotWasOnGoal","shotPlayStopped","shotAngle","shotGoalieFroze","shotPlayContinuedInZone","shotPlayContinuedOutsideZone","awaySkatersOnIce","homeSkatersOnIce","season","shotAngleAdjusted","arenaAdjustedShotDistance","goal","shotGeneratedRebound", "xCordAdjusted", "yCordAdjusted","shotType","shotRush","shotRebound")
 
 recent_season <- rbind(select(shots1019,all_of(variable)),select(shots2020,all_of(variable)))
+
 evenstrength <- 
   recent_season %>% 
   filter(xCordAdjusted %in% c(25:89),
          yCordAdjusted %in% c(-42:42)) %>% 
   filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
+
+powerplay <-
+  recent_season %>% 
+  filter(xCordAdjusted %in% c(25:89),
+         yCordAdjusted %in% c(-42:42)) %>% 
+  filter((homeSkatersOnIce == 4 & awaySkatersOnIce == 5)|
+           (homeSkatersOnIce == 5 & awaySkatersOnIce == 4))
 
 # 2020 Sample
 evenstrength <- 
@@ -43,18 +49,8 @@ powerplay <-
   select(all_of(variable))%>%
   filter(xCordAdjusted %in% c(25:89),
          yCordAdjusted %in% c(-42:42)) %>% 
-<<<<<<< HEAD
-  filter((homeSkatersOnIce == 4 | awaySkatersOnIce == 4),
-         (homeSkatersOnIce == 5 | awaySkatersOnIce == 5),
-         (homeSkatersOnIce > 3),
-         (homeSkatersOnIce < 6),
-         (awaySkatersOnIce > 3),
-         (awaySkatersOnIce < 6),
-  )
-=======
   filter((homeSkatersOnIce == 4 & awaySkatersOnIce == 5)|
            (homeSkatersOnIce == 5 & awaySkatersOnIce == 4))
->>>>>>> 17b7523ffe91a21e006852d5c224bfd49b523bd3
 #
 
 # Goal --------------------------------------------------------------------
@@ -126,11 +122,6 @@ tab_model(shotOnGoal_logit_even,transform = NULL,
 # Heat Map ----------------------------------------------------------------
 
 
-
-
-
-<<<<<<< HEAD
-=======
 # Multi -------------------------------------------------------------------
 
 recent_season <- rbind(select(shots1019,all_of(variable)),select(shots2020,all_of(variable)))
@@ -139,9 +130,8 @@ multi <- recent_season %>%
   filter(shotWasOnGoal==1,
          !is.na(shotType),
          shotType!="")
-
-# 21 observation that is both goal and froze, 5 NA shotType and 164 "" shotType
-# for 2 of 164 "", all 6 outcomes are 0.
+         
+         
 multi<-multi %>% 
   mutate(outcome=case_when(shotGoalieFroze==1 ~ "GoalieFroze",
                            goal==1 ~"Goal",
@@ -149,6 +139,10 @@ multi<-multi %>%
                            shotPlayContinuedInZone == 1 ~ "PlayInZone",
                            shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
                            shotPlayStopped == 1 ~ "PlayStopped"))
+
+# 21 observation that is both goal and froze, 5 NA shotType and 164 "" shotType
+# for 2 of 164 "", all 6 outcomes are 0.
+
 
 
 multi$outcome <- relevel(as.factor(multi$outcome),ref="Goal")
@@ -164,12 +158,10 @@ head(multi_mo$fitted.values,5)
 
 chisq.test(multi$outcome,predict(multi_mo))
 
-
 library(summarytools)
 # Build a classification table by using the ctable function
 ctable <- table(multi$outcome,predict(multi_mo))
 ctable
->>>>>>> 17b7523ffe91a21e006852d5c224bfd49b523bd3
 
 
-
+# test --------------------------------------------------------------------
