@@ -5,7 +5,6 @@
     <meta charset="utf-8" />
     <meta name="author" content="Claire Dudley" />
     <meta name="author" content="Ruby Wu" />
-    <script src="logitmodelpres_files/header-attrs/header-attrs.js"></script>
     <script src="logitmodelpres_files/htmlwidgets/htmlwidgets.js"></script>
     <script src="logitmodelpres_files/viz/viz.js"></script>
     <link href="logitmodelpres_files/DiagrammeR-styles/styles.css" rel="stylesheet" />
@@ -19,7 +18,7 @@ class: center, middle, inverse, title-slide
 # Multinomial Logit Shot Outcome Model
 ### Claire Dudley
 ### Ruby Wu
-### July 12th, 2021
+### July 15th, 2021
 
 ---
 
@@ -39,10 +38,29 @@ class: center, middle, inverse, title-slide
 
 ---
 
+## Basic Logistic Model
+
+&lt;img src="EDA_0716_files/xG_logit_even.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Basic Logistic Model
+
+
+
+
+&lt;img src="logitmodelpres_files/figure-html/unnamed-chunk-4-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+
+
+
 ### Flowchart of Shot Outcomes
 
-<div id="htmlwidget-1d2be46cac8235cefff8" style="width:80%;height:504px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1d2be46cac8235cefff8">{"x":{"diagram":"digraph flowchart {\n      node [ fontname = TimesNewRoman, shape = rectangle, color = Lavender, style = filled]\n      tab1 [label = \"Did the Shot Hit the Net?\"]\n      tab2 [label = \"Shot on Net\"]\n      tab3 [label = \"Shot Misses Net\"]\n      tab4 [label = \"Goal\"]\n      tab5 [label = \"Not a Goal\"]\n      tab6 [label = \"Goalie Freezes Puck\"]\n      tab7 [label = \"Shot Generates Rebound\"]\n      tab8 [label = \"Play Continued in Zone\"]\n      tab9 [label = \"Play Continued Outside Zone\"]\n      tab10 [label = \"Stoppage of Play\"]\n      \n      tab1 -> tab2;\n      tab1 -> tab3;\n      tab2 -> tab4;\n      tab2 -> tab5;\n      tab5 -> tab6;\n      tab5 -> tab7;\n      tab5 -> tab8;\n      tab5 -> tab9;\n      tab5 -> tab10;\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-bd113155060d9cb79cd3" style="width:80%;height:504px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-bd113155060d9cb79cd3">{"x":{"diagram":"digraph flowchart {\n      node [ fontname = TimesNewRoman, shape = rectangle, color = Lavender, style = filled]\n      tab1 [label = \"Did the Shot Hit the Net?\"]\n      tab2 [label = \"Shot on Net\"]\n      tab3 [label = \"Shot Misses Net\"]\n      tab4 [label = \"Goal\"]\n      tab5 [label = \"Not a Goal\"]\n      tab6 [label = \"Goalie Freezes Puck\"]\n      tab7 [label = \"Shot Generates Rebound\"]\n      tab8 [label = \"Play Continued in Zone\"]\n      tab9 [label = \"Play Continued Outside Zone\"]\n      tab10 [label = \"Stoppage of Play\"]\n      \n      tab1 -> tab2;\n      tab1 -> tab3;\n      tab2 -> tab4;\n      tab2 -> tab5;\n      tab5 -> tab6;\n      tab5 -> tab7;\n      tab5 -> tab8;\n      tab5 -> tab9;\n      tab5 -> tab10;\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -63,20 +81,7 @@ class: center, middle, inverse, title-slide
 
 ### Examining Predicted Probabilities for Shot Type
 
-&lt;img src="probs.png" width="50%" style="display: block; margin: auto;" /&gt;&lt;img src="logitmodelpres_files/figure-html/unnamed-chunk-4-2.png" width="50%" style="display: block; margin: auto;" /&gt;
-
-
-
-
-
-
-
-
-
-
-
-
-
+&lt;img src="logitmodelpres_files/figure-html/unnamed-chunk-8-1.png" width="50%" style="display: block; margin: auto;" /&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

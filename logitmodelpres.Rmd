@@ -57,12 +57,12 @@ variable<- c("arenaAdjustedShotDistance","shotWasOnGoal","shotPlayStopped","shot
 recent_season <- rbind(select(shots1019,all_of(variable)),select(shots2020,all_of(variable)))
 
 evenstrength <- 
-  shots2020 %>% 
+  recent_season %>% 
   filter(xCordAdjusted %in% c(25:89),
          yCordAdjusted %in% c(-42:42)) %>% 
   filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
 
-ongoal <- recent_season %>% 
+ongoal <- evenstrength %>% 
   filter(shotWasOnGoal==1,
          !is.na(shotType),
          shotType!="")
@@ -168,9 +168,6 @@ coe%>%
 ```
 
 ---
-
-
-
 
 
 ### Flowchart of Shot Outcomes
