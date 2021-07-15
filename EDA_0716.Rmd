@@ -127,6 +127,19 @@ recent_season %>% slice_head(n = 5) %>% select(goal,shotType,shotGoalieFroze,awa
 
 ---
 
+### About Moneypuck's Expected Goals Model
+
+* Predicts probability of each shot being a goal
+
+* Uses distance from net, angle of shot, type of shot, and what happened before the shot
+
+* Built on 800,000 shots in the NHL from 2007 - 2015
+
+* Built using gradient boosting
+
+
+---
+
 ### Calibration of Moneypuck xG Model
 
 
