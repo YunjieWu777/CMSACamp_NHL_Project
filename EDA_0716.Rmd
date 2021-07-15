@@ -93,6 +93,37 @@ deflection <- recent_season %>%
 
 wristshot <- recent_season %>%
   filter(shotType == "WRIST")
+
+xg_logit_even <- glm(goal ~ shotAngleAdjusted+arenaAdjustedShotDistance,
+                                 data = evenstrength,
+                                 family = binomial("logit")) 
+
+rebound_logit_even <- glm(shotGeneratedRebound ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+                   shotType+shotRush+shotRebound,
+                     data = evenstrength,
+                     family = binomial("logit")) 
+
+
+freeze_logit_even <- glm(shotGoalieFroze ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+                   shotType+shotRush+shotRebound,
+                     data = evenstrength,
+                     family = binomial("logit")) 
+
+inzone_logit_even <- glm(shotPlayContinuedInZone ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+                   shotType+shotRush+shotRebound,
+                         data = evenstrength,
+                         family = binomial("logit")) 
+
+outzone_logit_even <- glm(shotPlayContinuedOutsideZone ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+                   shotType+shotRush+shotRebound,
+                         data = evenstrength,
+                         family = binomial("logit")) 
+
+ongoal_logit_even <- glm(shotWasOnGoal ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+                   shotType+shotRush+shotRebound,
+                         data = evenstrength,
+                         family = binomial("logit")) 
+
 ```
 
 ## Research Question

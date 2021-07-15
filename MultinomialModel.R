@@ -17,7 +17,7 @@ evenstrength <-
   filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
 
 ongoal <-
-  shots2020 %>%
+  evenstrength %>%
   filter(shotWasOnGoal == 1)
 
 
@@ -138,10 +138,14 @@ library(sjPlot)
 library(sjmisc)
 
 
+test2 <- multinom(Outcome2 ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+                   shotType+shotRush+shotRebound+shotType*shotAngleAdjusted,
+                 data = ongoal,
+                 Hess = TRUE)
 plot_model(test, type = "pred", terms = c("arenaAdjustedShotDistance", "shotType")) +
   theme_bw()
 
-plot_model(test, type = "pred", terms = c("shotAngleAdjusted", "shotType")) +
+plot_model(test2, type = "pred", terms = c("shotAngleAdjusted [all]", "shotType")) +
   theme_bw()
 
 
