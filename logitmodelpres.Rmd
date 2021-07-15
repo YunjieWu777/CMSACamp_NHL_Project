@@ -4,7 +4,7 @@ title: "Multinomial Logit Shot Outcome Model"
 author: 
   - "Claire Dudley"
   - "Ruby Wu" 
-date: 'July 12th, 2021'
+date: 'July 15th, 2021'
 output: 
   xaringan::moon_reader:
     css: xaringan-themer.css
@@ -35,6 +35,7 @@ style_mono_accent(base_color = "#4d54a5",
 # Load packages
 library(tidyverse)
 library(data.table)
+library(haven)
 library(sjPlot)
 library(DiagrammeR)
 library(nnet)
@@ -45,15 +46,15 @@ library(sjmisc)
 
 # Load data
 shots2020 <- read_csv("data/shots_2020.csv")
-# shots0719 <- read.csv("data/shots_2007-2019.csv")
+shots0719 <- read.csv("data/shots_2007-2019.csv")
 
 # Filter data
-# shots1019 <- shots0719 %>% 
-  # filter(season>2009)
+shots1019 <- shots0719 %>% 
+  filter(season>2009)
 
 variable<- c("arenaAdjustedShotDistance","shotWasOnGoal","shotPlayStopped","shotAngle","shotGoalieFroze","shotPlayContinuedInZone","shotPlayContinuedOutsideZone","awaySkatersOnIce","homeSkatersOnIce","season","shotAngleAdjusted","arenaAdjustedShotDistance","goal","shotGeneratedRebound", "xCordAdjusted", "yCordAdjusted","shotType","shotRush","shotRebound")
 
-# recent_season <- rbind(select(shots1019,all_of(variable)),select(shots2020,all_of(variable)))
+recent_season <- rbind(select(shots1019,all_of(variable)),select(shots2020,all_of(variable)))
 
 evenstrength <- 
   shots2020 %>% 
@@ -61,36 +62,24 @@ evenstrength <-
          yCordAdjusted %in% c(-42:42)) %>% 
   filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
 
-ongoal <-
-  shots2020 %>%
-  filter(shotWasOnGoal == 1)
+ongoal <- recent_season %>% 
+  filter(shotWasOnGoal==1,
+         !is.na(shotType),
+         shotType!="")
+
+ongoal<-ongoal%>% 
+  mutate(outcome=case_when(shotGoalieFroze==1 ~ "GoalieFroze",
+                           goal==1 ~"Goal",
+                           shotGeneratedRebound == 1 ~ "GeneratesRebound",
+                           shotPlayContinuedInZone == 1 ~ "PlayInZone",
+                           shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
+                           shotPlayStopped == 1 ~ "PlayStopped"))
 
 
-ongoal <-
-  evenstrength %>%
-  mutate(
-    Outcome = case_when(shotGoalieFroze == 1 ~ "GoalieFroze",
-                        goal == 1 ~ "Goal",
-                        shotGeneratedRebound == 1 ~ "GeneratesRebound",
-                        shotPlayContinuedInZone == 1 ~ "PlayInZone",
-                        shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
-                        shotPlayStopped == 1 ~ "PlayStopped"))
+ongoal$outcome <- relevel(as.factor(ongoal$outcome),ref="Goal")
+ongoal$shotType <- as.factor(ongoal$shotType)
 
-
-
-ongoal <-
-  ongoal %>%
-  mutate(Outcome = as.factor(Outcome))
-
-ongoal <-
-  ongoal %>%
-  filter(!is.na(shotType),
-         !(shotType == ""))
-
-ongoal$Outcome2 <- 
-         relevel(ongoal$Outcome, ref = "Goal")
-
-test <- multinom(Outcome2 ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+test <- multinom(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+
                    shotType+shotRush+shotRebound,
                  data = ongoal)
   
@@ -104,6 +93,26 @@ test <- multinom(Outcome2 ~ shotAngleAdjusted+arenaAdjustedShotDistance+
 * <p> Now want to see a model that incorporates multiple outcomes </p>
 
 ---
+
+## Basic Logistic Model
+
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("EDA_0716_files/xG_logit_even.png")
+```
+
+---
+
+## Basic Logistic Model
+
+```{r}
+
+```
+
+---
+
+
+
+
 
 ### Flowchart of Shot Outcomes
 
