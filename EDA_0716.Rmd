@@ -41,6 +41,11 @@ library(haven)
 library(nnet)
 library(ggthemes)
 library(gt)
+library(DiagrammeR)
+library(stargazer)
+library(effects)
+library(sjPlot)
+library(sjmisc)
 
 theme_reach <- function() {
   theme_bw() +
@@ -100,6 +105,66 @@ wristshot <- recent_season %>%
 
 ---
 
+### What Are the Potential Outcomes from a Shot?
+
+* First, shot can either hit the net or miss the net.
+
+--
+
+* If shot hits the net, it is either a goal or not a goal
+
+--
+
+* If shot hits the net and is not a goal, there are several possible outcomes of that shot coded in the Moneypuck dataset
+
+
+---
+
+
+
+## Flow Chat for Shot Outcomes
+
+```{r}
+grViz(diagram = "digraph flowchart {
+      node [ fontname = TimesNewRoman, shape = rectangle, color = Lavender, style = filled]
+      tab1 [label = '@@1']
+      tab2 [label = '@@2']
+      tab3 [label = '@@3']
+      tab4 [label = '@@4']
+      tab5 [label = '@@5']
+      tab6 [label = '@@6']
+      tab7 [label = '@@7']
+      tab8 [label = '@@8']
+      tab9 [label = '@@9']
+      tab10 [label == '@@10']
+      
+      tab1 -> tab2;
+      tab1 -> tab3;
+      tab2 -> tab4;
+      tab2 -> tab5;
+      tab5 -> tab6;
+      tab5 -> tab7;
+      tab5 -> tab8;
+      tab5 -> tab9;
+      tab5 -> tab10;
+}
+      
+      [1]: 'Did the Shot Hit the Net?'
+      [2]: 'Shot on Net'
+      [3]: 'Shot Misses Net'
+      [4]: 'Goal'
+      [5]: 'Not a Goal'
+      [6]: 'Goalie Freezes Puck'
+      [7]: 'Shot Generates Rebound'
+      [8]: 'Play Continued in Zone'
+      [9]: 'Play Continued Outside Zone'
+      [10]: 'Stoppage of Play'
+      
+      ")
+```
+
+
+
 ### The Moneypuck Dataset
 
 Loaded in the dataset of all the shots from 2010 season to 2020 season (includes shots as of 2021/7/8) in NHL from [`moneypuck`](http://www.stat.cmu.edu/cmsac/sure/2021/materials/data/xy_examples/moneypuck_shots_2020.csv)
@@ -119,6 +184,19 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
 ```{r display-data, warning = FALSE, message = FALSE, echo = FALSE}
 recent_season %>% slice_head(n = 5) %>% select(season,awaySkatersOnIce,shotAngleAdjusted,xCordAdjusted,shotType,goal,xGoal) %>% gt()
 ```
+
+---
+
+### About Moneypuck's Expected Goals Model
+
+* Predicts probability of each shot being a goal
+
+* Uses distance from net, angle of shot, type of shot, and what happened before the shot
+
+* Built on 800,000 shots in the NHL from 2007 - 2015
+
+* Built using gradient boosting
+
 
 ---
 
@@ -269,6 +347,120 @@ knitr::include_graphics("EDA_0716_files/xG_logit_even.png")
 
 ## Heat Map
 
+```{r}
+source('rink.r')  
+g <- rink 
+plot1 <- g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = xG_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  labs(title = "Expected Goal") +
+   ylim(25, 100) +
+  theme_bw()
+ 
+plot2 <- g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = reb_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+   ylim(25, 100) +
+  labs(title = "Rebound") +
+  theme_bw()
+
+plot3 <- g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = froze_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  labs(title = "Goalie Froze") +
+   ylim(25, 100) +
+  theme_bw()
+
+plot4 <-
+   g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = inZone_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange")  +
+  labs(title = "Play in Zone") +
+   ylim(25, 100) +
+  theme_bw()
+
+plot5 <-g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = outZone_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  labs(title = "Play Out Zone") +
+   ylim(25, 100) +
+  theme_bw()
+
+plot6 <- g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = stop_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  labs(title = "Goalie Stop") +
+   ylim(25, 100) +
+  theme_bw()
+ 
+plot7 <-  g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = shotOnGoal_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  labs(title = "Shot on Goal") +
+   ylim(25, 100) +
+  theme_bw()
+
+gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, plot7,
+                        nrow = 3)
+
+
+```
 
 
 ---
@@ -311,15 +503,6 @@ multi_mo <- multinom(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+shotT
 knitr::kable(head(multi_mo$fitted.values,5))
 ```
 
----
-
-
-
-## Flow Chat for shot outcome
-
-
-
-
 
 
 ---
@@ -330,6 +513,7 @@ knitr::kable(head(multi_mo$fitted.values,5))
 
 
 
+<<<<<<< HEAD
 ### Limitations and Next Step
 
 
@@ -338,3 +522,9 @@ knitr::kable(head(multi_mo$fitted.values,5))
 
 
 ### Appendix
+=======
+### Next steps
+
+
+#### Feel free to ask any questions!
+>>>>>>> bee087d7e5c961b32318dcfb855a87f7161348a7
