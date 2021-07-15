@@ -49,7 +49,8 @@ ongoal$Outcome2 <-
 
 test <- multinom(Outcome2 ~ shotAngleAdjusted+arenaAdjustedShotDistance+
                    shotType+shotRush+shotRebound,
-                 data = ongoal)
+                 data = ongoal,
+                 Hess = TRUE)
 
 summary(test)
 
@@ -64,6 +65,8 @@ head(pp <- fitted(test))
 library(stargazer)
 
 stargazer(test, type = "html", out = "test.htm")
+stargazer((summary(test)$coefficients/summary(test)$standard.errors), type = "html", 
+          out = "ztest.htm")
 
 # Relative Risk Ratios ----------------------------------------------------
 
@@ -76,9 +79,6 @@ stargazer(test, type = "html", coef = list(test_rrr), p.auto = FALSE,
 library(summarytools)
 # Build a classification table by using the ctable function
 
-
-ctable <- table(ongoal$Outcome2,predict(test))
-ctable
 
 # ordinal logit model: predicted probabilities ----------------------------
 
@@ -111,17 +111,38 @@ dshot <- data.frame(shotType = c("BACK", "DEFL", "SLAP",
 
 predict(test, newdata = dshot, "probs")
 
+stargazer(predict(test, newdata = dshot, "probs"), type = "html", out = "probs.htm")
+
+
 
 dangle <- data.frame(shotType = rep(c("BACK", "DEFL", "SLAP",
                                   "SNAP", "TIP", "WRAP",
-                                  "WRIST")), 
-          shotAngleAdjusted = rep(c(0:90), 7),
-          arenaAdjustedShotDistance = rep(mean(ongoal$arenaAdjustedShotDistance)),
-          shotRush = rep(mean(ongoal$shotRush)),
-          shotRebound = rep(mean(ongoal$shotRebound)))
+                                  "WRIST"), each = ), 
+          shotAngleAdjusted = rep(c(0:80), 7),
+          arenaAdjustedShotDistance = rep(c(0:50), 7),
+          shotRush = rep(c(0:1), 7),
+          shotRebound = rep(c(0:1), 7))
 
 ppangle <- cbind(dangle, predict(test, newdata = dangle, type = "probs"))
 
 by(ppangle[, 2:5], ppangle$shotType, colMeans)
+
+library(effects)
+
+plot(Effect("shotType", test))
+plot(Effect("shotType", test), multiline = T)
+plot(Effect("shotType", test), style = "stacked")
+
+
+library(sjPlot)
+library(sjmisc)
+
+
+plot_model(test, type = "pred", terms = c("arenaAdjustedShotDistance", "shotType")) +
+  theme_bw()
+
+plot_model(test, type = "pred", terms = c("shotAngleAdjusted", "shotType")) +
+  theme_bw()
+
 
 

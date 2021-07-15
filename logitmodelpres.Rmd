@@ -39,6 +39,9 @@ library(sjPlot)
 library(DiagrammeR)
 library(nnet)
 library(stargazer)
+library(effects)
+library(sjPlot)
+library(sjmisc)
 
 # Load data
 shots2020 <- read_csv("data/shots_2020.csv")
@@ -116,35 +119,29 @@ grViz(diagram = "digraph flowchart {
       tab7 [label = '@@7']
       tab8 [label = '@@8']
       tab9 [label = '@@9']
-      tab10 [label = '@@10']
-      tab11 [label = '@@11']
-      tab12 [label = '@@12']
+      tab10 [label == '@@10']
       
       tab1 -> tab2;
       tab1 -> tab3;
-      tab3 -> tab4;
-      tab3 -> tab5;
-      tab2 -> tab6;
-      tab2 -> tab7;
-      tab7 -> tab8;
-      tab7 -> tab9;
-      tab7 -> tab10;
-      tab7 -> tab11;
-      tab7 -> tab12;
+      tab2 -> tab4;
+      tab2 -> tab5;
+      tab5 -> tab6;
+      tab5 -> tab7;
+      tab5 -> tab8;
+      tab5 -> tab9;
+      tab5 -> tab10;
 }
       
       [1]: 'Did the Shot Hit the Net?'
       [2]: 'Shot on Net'
       [3]: 'Shot Misses Net'
-      [4]: 'Play Continued in Zone'
-      [5]: 'Play Continued Outside Zone'
-      [6]: 'Goal'
-      [7]: 'Not a Goal'
-      [8]: 'Goalie Freezes Puck'
-      [9]: 'Shot Generates Rebound'
-      [10]: 'Play Continued in Zone'
-      [11]: 'Play Continued Outside Zone'
-      [12]: 'Stoppage of Play'
+      [4]: 'Goal'
+      [5]: 'Not a Goal'
+      [6]: 'Goalie Freezes Puck'
+      [7]: 'Shot Generates Rebound'
+      [8]: 'Play Continued in Zone'
+      [9]: 'Play Continued Outside Zone'
+      [10]: 'Stoppage of Play'
       
       ")
 ```
@@ -159,7 +156,6 @@ knitr::include_graphics("test.png")
 
 ---
 
-
 ### Relative Risk Ratios of Model
 
 * Exponentiated value of the logit coefficients
@@ -169,6 +165,18 @@ knitr::include_graphics("testrrr.png")
 ```
 
 
+---
+
+### Examining Predicted Probabilities for Shot Type
+
+* 1 = backhand, 2 = deflection, 3 = slapshot, 4 = snapshot,
+5 = tip, 6 = wraparound, 7 = wristshot
+
+```{r fig.show="hold", out.width = "50%"}
+knitr::include_graphics("probs.png")
+plot(Effect("shotType", test), multiline = T)
+
+```
 
 
 
