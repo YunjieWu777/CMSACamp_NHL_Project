@@ -170,7 +170,6 @@ knitr::include_graphics("testrrr.png")
 ### Examining Predicted Probabilities for Shot Type
 
 ```{r fig.show="hold", out.width = "50%",fig.align='center'}
-knitr::include_graphics("probs.png")
 plot(Effect("shotType", test), multiline = T) 
 
 ```
