@@ -111,13 +111,13 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
 
 * There's 137 columns of 1,146,536 shots taken
 
-* Each row and observation is a singular shot taken, contain information about 
+* Each row and observation is a singular shot taken, contain information about Player info,Info about the shot,Team context,Game context
 
 * We select 19 variables for our analysis
 
 
 ```{r display-data, warning = FALSE, message = FALSE, echo = FALSE}
-recent_season %>% slice_head(n = 5) %>% select(goal,shotType,shotGoalieFroze,awaySkatersOnIce,season,shotAngleAdjusted,xCordAdjusted,xGoal) %>% gt()
+recent_season %>% slice_head(n = 5) %>% select(season,awaySkatersOnIce,shotAngleAdjusted,xCordAdjusted,shotType,goal,xGoal) %>% gt()
 ```
 
 ---
@@ -330,7 +330,11 @@ knitr::kable(head(multi_mo$fitted.values,5))
 
 
 
-### Next step
+### Limitations and Next Step
 
 
 #### Fell free to ask any quesitons!
+---
+
+
+### Appendix
