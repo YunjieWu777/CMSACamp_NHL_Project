@@ -56,14 +56,21 @@ variable<- c("arenaAdjustedShotDistance","shotWasOnGoal","shotPlayStopped","shot
 # recent_season <- rbind(select(shots1019,all_of(variable)),select(shots2020,all_of(variable)))
 
 evenstrength <- 
-  shots2020 %>% 
+  recent_season %>% 
   filter(xCordAdjusted %in% c(25:89),
          yCordAdjusted %in% c(-42:42)) %>% 
   filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
 
+<<<<<<< HEAD
 ongoal <-
   shots2020 %>%
   filter(shotWasOnGoal == 1)
+=======
+ongoal <- evenstrength %>% 
+  filter(shotWasOnGoal==1,
+         !is.na(shotType),
+         shotType!="")
+>>>>>>> 8883928863ee9442d8bfcba084e15f91a033ce13
 
 
 ongoal <-
@@ -105,9 +112,88 @@ test <- multinom(Outcome2 ~ shotAngleAdjusted+arenaAdjustedShotDistance+
 
 ---
 
+<<<<<<< HEAD
+=======
+## Basic Logistic Model
+
+```{r, echo=FALSE, out.width="55%",fig.align='center'}
+knitr::include_graphics("EDA_0716_files/xG_logit_even.png")
+```
+
+---
+
+## Basic Logistic Model
+```{r}
+xG_logit_even <- glm(goal ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
+                     data = evenstrength,
+                     family = binomial("logit"))
+
+reb_logit_even <- glm(shotGeneratedRebound ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
+                      data = evenstrength,
+                      family = binomial("logit"))
+
+froze_logit_even <- glm(shotGoalieFroze ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
+                        data = evenstrength,
+                        family = binomial("logit"))
+
+inZone_logit_even <- glm(shotPlayContinuedInZone ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
+                         data = evenstrength,
+                         family = binomial("logit"))
+
+outZone_logit_even <- glm(shotPlayContinuedOutsideZone ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
+                          data = evenstrength,
+                          family = binomial("logit"))
+
+stop_logit_even <- glm(shotPlayStopped ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
+                       data = evenstrength,
+                       family = binomial("logit"))
+
+shotOnGoal_logit_even <- glm(shotWasOnGoal ~                        shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
+                             data = evenstrength,
+                             family = binomial("logit"))
+
+```
+
+```{r}
+AngleCoe<-c(xG_logit_even$coefficients[[2]],
+         reb_logit_even $coefficients[[2]],
+         froze_logit_even$coefficients[[2]],
+         inZone_logit_even$coefficients[[2]],
+         outZone_logit_even$coefficients[[2]],
+         stop_logit_even$coefficients[[2]],
+         shotOnGoal_logit_even$coefficients[[2]])
+
+AngleSE<- c(broom::tidy(xG_logit_even)$std.error[[2]],
+    broom::tidy(reb_logit_even)$std.error[[2]],
+    broom::tidy(froze_logit_even)$std.error[[2]],
+    broom::tidy(inZone_logit_even)$std.error[[2]],
+    broom::tidy(outZone_logit_even)$std.error[[2]],
+    broom::tidy(stop_logit_even)$std.error[[2]],
+    broom::tidy(shotOnGoal_logit_even)$std.error[[2]])
+
+coe<-data.frame(outcome=c("xG","rebound","froze","inZone","outZone","stop","shotOnGoal"),
+                AngleCoe=AngleCoe,AngleSE=AngleSE)
+
+coe$outcome<-relevel(as.factor(coe$outcome),"xG","rebound","froze","inZone","outZone","stop","shotOnGoal")
+```
+
+```{r fig.show="hold", out.width = "70%",fig.align='center'}
+coe%>% 
+  ggplot(aes(y=outcome,x=AngleCoe))+
+  geom_point(size = 0.5)+
+  geom_errorbarh(aes(xmax=AngleCoe+AngleSE, xmin=AngleCoe-AngleSE), height = 0.15, colour = "red")+
+  coord_flip()+
+  theme_bw()+
+  labs(title = "Shot Angle Coefficient") 
+```
+
+---
+
+
+>>>>>>> 8883928863ee9442d8bfcba084e15f91a033ce13
 ### Flowchart of Shot Outcomes
 
-```{r out.width = "80%"}
+```{r out.width = "80%",fig.align="center"}
 grViz(diagram = "digraph flowchart {
       node [ fontname = TimesNewRoman, shape = rectangle, color = Lavender, style = filled]
       tab1 [label = '@@1']

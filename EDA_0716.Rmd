@@ -541,10 +541,6 @@ knitr::kable(head(multi_mo$fitted.values,5))
 
 ### Conclusion
 
-
-
-
-<<<<<<< HEAD
 ### Limitations and Next Step
 
 
@@ -553,9 +549,3 @@ knitr::kable(head(multi_mo$fitted.values,5))
 
 
 ### Appendix
-=======
-### Next steps
-
-
-#### Feel free to ask any questions!
->>>>>>> bee087d7e5c961b32318dcfb855a87f7161348a7

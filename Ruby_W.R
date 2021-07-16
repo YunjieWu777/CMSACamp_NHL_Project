@@ -1,6 +1,5 @@
 # Load packages and data --------------------------------------------------
 library(tidyverse)
-library(ggthemes)
 library(haven)
 library(nnet)
 library(sjPlot)
@@ -126,40 +125,41 @@ tab_model(shotOnGoal_logit_even,transform = NULL,
 
 
 # Plot --------------------------------------------------------------------
+Coe<-function(i){
+  return(xG_logit_even$coefficients[[i]],
+         reb_logit_even $coefficients[[i]],
+         froze_logit_even$coefficients[[i]],
+         inZone_logit_even$coefficients[[i]],
+         outZone_logit_even$coefficients[[i]],
+         stop_logit_even$coefficients[[i]],
+         shotOnGoal_logit_even$coefficients[[i]])
+}
 
-coe<-data.frame(outcome=c("xG","rebound","froze","inZone","outZone","stop","shotOnGoal"),angleCoe=angle,angleSE=angleSE)
+SE<- function(i){
+  return(c(broom::tidy(xG_logit_even)$std.error[[i]],
+    broom::tidy(reb_logit_even)$std.error[[i]],
+    broom::tidy(froze_logit_even)$std.error[[i]],
+    broom::tidy(inZone_logit_even)$std.error[[i]],
+    broom::tidy(outZone_logit_even)$std.error[[i]],
+    broom::tidy(stop_logit_even)$std.error[[i]],
+    broom::tidy(shotOnGoal_logit_even)$std.error[[i]]))
+}
 
-angle<-c(xG_logit_even$coefficients[[2]],
-         reb_logit_even $coefficients[[2]],
-         froze_logit_even$coefficients[[2]],
-         inZone_logit_even$coefficients[[2]],
-         outZone_logit_even$coefficients[[2]],
-         stop_logit_even$coefficients[[2]],
-         shotOnGoal_logit_even$coefficients[[2]])
-
-angleSE <- c(broom::tidy(xG_logit_even)$std.error[[2]],
-             broom::tidy(reb_logit_even)$std.error[[2]],
-             broom::tidy(froze_logit_even)$std.error[[2]],
-             broom::tidy(inZone_logit_even)$std.error[[2]],
-             broom::tidy(outZone_logit_even)$std.error[[2]],
-             broom::tidy(stop_logit_even)$std.error[[2]],
-             broom::tidy(shotOnGoal_logit_even)$std.error[[2]])
+coe<-data.frame(outcome=c("xG","rebound","froze","inZone","outZone","stop","shotOnGoal"),
+                angleCoe=Coe(2),angleSE=SE(2),
+                distanceCoe=Coe(3),distanceSE=SE(3))
 
 coe$outcome<-relevel(as.factor(coe$outcome),"xG","rebound","froze","inZone","outZone","stop","shotOnGoal")
 
 levels(coe$outcome)
 
-means.sem <- transform(coe, lower=angleCoe-angleSE, upper=angleCoe+angleSE)
-
 coe%>% 
   ggplot(aes(y=outcome,x=angleCoe))+
   geom_point(size = 0.5)+
-  geom_errorbarh(data=means.sem, aes(xmax=upper, xmin=lower), height = 0.15, colour = "red")+
+  geom_errorbarh(aes(xmax=angleCoe+angleSE, xmin=angleCoe-angleSE), height = 0.15, colour = "red")+
   coord_flip()
 
-
-ggplot()+
-  geom
+xG_logit_even$coefficients[3]
 
 #Heat Map ----------------------------------------------------------------
 
@@ -207,3 +207,10 @@ ctable
 
 
 # test --------------------------------------------------------------------
+
+library(stargazer)
+stargazer((summary(test)$coefficients/summary(test)$standard.errors), type = "html", 
+          out = "ztest.htm")
+stargazer(test, type = "html", coef = list(test_rrr), p.auto = FALSE,
+          out = "testrrr.htm")
+test_rrr <- exp(coef(test))
