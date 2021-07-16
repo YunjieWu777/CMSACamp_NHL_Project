@@ -158,6 +158,10 @@ stop_logit_even <- glm(shotPlayStopped ~ shotAngleAdjusted+arenaAdjustedShotDist
 
 - Now focused on all of the potential outcomes resulting from a shot in hockey
 
+--
+
+- Want to find the best way to estimate the value of a shot attempt, and potentially a player's impact on that value
+
 ---
 
 ### What Are the Potential Outcomes from a Shot?
@@ -567,5 +571,19 @@ plot(Effect("shotType", multi_mo), multiline = T)
 
 ### Limitations and Next Step
 
+* Comparing our results to powerplay sample
 
-#### Fell free to ask any quesitons!
+--
+
+* Compare heatmaps to each other - rescale, subtract difference, plot resulting difference as a heatmap
+
+--
+
+* Looking at non-parametric models (random forest, boosting) and comparing to our multinomial logistic regression model
+
+--
+
+* Find a better way to graphically represent results from multinomial logistic regression model
+
+
+#### Feel free to ask any questions!
