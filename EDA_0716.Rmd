@@ -552,7 +552,7 @@ multi_coe %>%
   scale_x_discrete(position = "top")+
   scale_fill_distiller(palette='RdBu',direction=-1, limits=c(-1.2,1.2))+
   theme_reach()+
-  labs(title="Coe")
+  labs(title="Coefficient for Multinomial Logistic Model")
 ```
 
 ---
