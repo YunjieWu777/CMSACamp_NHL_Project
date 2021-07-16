@@ -583,5 +583,6 @@ plot(Effect("shotType", multi_mo), multiline = T)
 
 * Find a better way to graphically represent results from multinomial logistic regression model
 
+--
 
 #### Feel free to ask any questions!
