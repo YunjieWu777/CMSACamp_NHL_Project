@@ -392,7 +392,7 @@ g +
 ## Each Outcome We Looked At
 
 
-```{r echo=FALSE,fig.align="center", fig.show="hold", out.width="85%",fig.width = 9, fig.height = 7}
+```{r echo=FALSE,fig.align="center", fig.show="hold", out.width="80%",fig.width = 11, fig.height = 7}
 
 plot1 <- g + 
   stat_summary_hex(data = evenstrength,
