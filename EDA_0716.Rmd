@@ -46,6 +46,7 @@ library(stargazer)
 library(effects)
 library(sjPlot)
 library(sjmisc)
+library(RColorBrewer)
 
 theme_reach <- function() {
   theme_bw() +
@@ -65,9 +66,10 @@ theme_reach <- function() {
 # shots2020 <- read_csv("data/shots_2020.csv")
 # shots0719 <- read.csv("data/shots_2007-2019.csv")
 
-load("shots1019.RData")
-load("shots2020.RData")
+#load("shots1019.RData")
+#load("shots2020.RData")
 load("recent_season.RData")
+load("multi_coe.RData")
 
 # recent_season <- 
 #  rbind(
@@ -174,46 +176,10 @@ stop_logit_even <- glm(shotPlayStopped ~ shotAngleAdjusted+arenaAdjustedShotDist
 ---
 
 
-
 ## Flow Chat for Shot Outcomes
 
-```{r}
-grViz(diagram = "digraph flowchart {
-      node [ fontname = TimesNewRoman, shape = rectangle, color = Lavender, style = filled]
-      tab1 [label = '@@1']
-      tab2 [label = '@@2']
-      tab3 [label = '@@3']
-      tab4 [label = '@@4']
-      tab5 [label = '@@5']
-      tab6 [label = '@@6']
-      tab7 [label = '@@7']
-      tab8 [label = '@@8']
-      tab9 [label = '@@9']
-      tab10 [label = '@@10']
-      
-      tab1 -> tab2;
-      tab1 -> tab3;
-      tab2 -> tab4;
-      tab2 -> tab5;
-      tab5 -> tab6;
-      tab5 -> tab7;
-      tab5 -> tab8;
-      tab5 -> tab9;
-      tab5 -> tab10;
-}
-      
-      [1]: 'Did the Shot Hit the Net?'
-      [2]: 'Shot on Net'
-      [3]: 'Shot Misses Net'
-      [4]: 'Goal'
-      [5]: 'Not a Goal'
-      [6]: 'Goalie Freezes Puck'
-      [7]: 'Shot Generates Rebound'
-      [8]: 'Play Continued in Zone'
-      [9]: 'Play Continued Outside Zone'
-      [10]: 'Stoppage of Play'
-      
-      ")
+````{r, echo=FALSE, fig.align='center',}
+knitr::include_graphics("EDA_0716_files/flow.png")
 ```
 
 ---
@@ -222,20 +188,21 @@ grViz(diagram = "digraph flowchart {
 
 Loaded in the dataset of all the shots from 2010 season to 2020 season (includes shots as of 2021/7/8) in NHL from [`moneypuck`](http://www.stat.cmu.edu/cmsac/sure/2021/materials/data/xy_examples/moneypuck_shots_2020.csv)
 
-```{r}
+--
 
-```
+* There's 137 columns of 1,146,536 rows
 
+--
 
-* There's 137 columns of 1,146,536 shots taken
+* Each row represent a singular shot taken; contain information about Player info, Info about the shot, Team context, and Game context
 
-* Each row and observation is a singular shot taken, contain information about Player info,Info about the shot,Team context,Game context
+--
 
 * We select 19 variables for our analysis
 
 
 ```{r display-data, warning = FALSE, message = FALSE, echo = FALSE}
-recent_season %>% slice_head(n = 5) %>% select(season,awaySkatersOnIce,shotAngleAdjusted,xCordAdjusted,shotType,goal,xGoal) %>% gt()
+recent_season %>% slice_head(n = 4) %>% select(season,awaySkatersOnIce,shotAngleAdjusted,xCordAdjusted,shotType,goal,xGoal) %>% gt()
 ```
 
 ---
@@ -400,7 +367,7 @@ knitr::include_graphics("EDA_0716_files/xG_logit_even.png")
 
 ## Shot on Goal Heatmap
 
-```{r}
+```{r fig.align="center"}
 source('rink.r')  
 g <- rink 
 
@@ -425,7 +392,7 @@ g +
 ## Each Outcome We Looked At
 
 
-```{r}
+```{r echo=FALSE,fig.align="center", fig.show="hold", out.width="85%",fig.width = 9, fig.height = 7}
 
 plot1 <- g + 
   stat_summary_hex(data = evenstrength,
@@ -544,7 +511,7 @@ gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
 
 ## Multinomial Logistic Model
 
-```{r}
+```{r include = FALSE}
 multi <- recent_season %>% 
   filter(shotWasOnGoal==1,
          !is.na(shotType),
@@ -572,15 +539,26 @@ multi_mo <- multinom(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+shotT
                      model=TRUE)
 ```
 
+```{r coe_plot, fig.align="center"}
+multi_coe %>%
+  ggplot(aes(x = outcome, y = variable)) +
+  geom_tile(aes(fill = value), color = "black") +
+  geom_text(aes(label=round(value, digits = 4)),
+            size=3,color = "black") +
+  scale_x_discrete(position = "top")+
+  scale_fill_distiller(palette='RdBu',direction=-1, limits=c(-1.2,1.2))+
+  theme_reach()+
+  labs(title="Coe")
+```
+
 ---
 
 ##  Multinomial Logistic Model
 
-```{r}
-knitr::kable(head(multi_mo$fitted.values,5))
+```{r fig.show="hold", out.width = "65%",fig.align='center'}
+plot(Effect("shotType", multi_mo), multiline = T) 
+
 ```
-
-
 
 ---
 
@@ -591,7 +569,3 @@ knitr::kable(head(multi_mo$fitted.values,5))
 
 
 #### Fell free to ask any quesitons!
----
-
-
-### Appendix

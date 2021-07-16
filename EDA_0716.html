@@ -5,11 +5,6 @@
     <meta charset="utf-8" />
     <meta name="author" content="Claire Dudley" />
     <meta name="author" content="Ruby Wu" />
-    <script src="EDA_0716_files/header-attrs/header-attrs.js"></script>
-    <script src="EDA_0716_files/htmlwidgets/htmlwidgets.js"></script>
-    <script src="EDA_0716_files/viz/viz.js"></script>
-    <link href="EDA_0716_files/DiagrammeR-styles/styles.css" rel="stylesheet" />
-    <script src="EDA_0716_files/grViz-binding/grViz.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -37,11 +32,15 @@ class: center, middle, inverse, title-slide
 
 ## Research Question
 
-- Compare the performance of different model predicting the possible outcome of a shot
+- Compare the performance of different models predicting the possible outcomes of a shot
 
-- Here we consider 6 outcome contioned that the shot was on Goal: Goal, froze by golie, shot generated reboudn, play stop, play continued in zone, and play contined outside zone
+--
 
-- Test on subset: evenstrenth (5vs5) and powerplay (5vs4)
+- Started with the idea of an expected goals model
+
+--
+
+- Now focused on all of the potential outcomes resulting from a shot in hockey
 
 ---
 
@@ -61,34 +60,35 @@ class: center, middle, inverse, title-slide
 ---
 
 
-
 ## Flow Chat for Shot Outcomes
 
-<div id="htmlwidget-d07f308a1bfeb8417ac6" style="width:504px;height:504px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d07f308a1bfeb8417ac6">{"x":{"diagram":"digraph flowchart {\n      node [ fontname = TimesNewRoman, shape = rectangle, color = Lavender, style = filled]\n      tab1 [label = \"Did the Shot Hit the Net?\"]\n      tab2 [label = \"Shot on Net\"]\n      tab3 [label = \"Shot Misses Net\"]\n      tab4 [label = \"Goal\"]\n      tab5 [label = \"Not a Goal\"]\n      tab6 [label = \"Goalie Freezes Puck\"]\n      tab7 [label = \"Shot Generates Rebound\"]\n      tab8 [label = \"Play Continued in Zone\"]\n      tab9 [label = \"Play Continued Outside Zone\"]\n      tab10 [label == \"Stoppage of Play\"]\n      \n      tab1 -> tab2;\n      tab1 -> tab3;\n      tab2 -> tab4;\n      tab2 -> tab5;\n      tab5 -> tab6;\n      tab5 -> tab7;\n      tab5 -> tab8;\n      tab5 -> tab9;\n      tab5 -> tab10;\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+&lt;img src="EDA_0716_files/flow.png" width="841" style="display: block; margin: auto;" /&gt;
 
-
+---
 
 ### The Moneypuck Dataset
 
 Loaded in the dataset of all the shots from 2010 season to 2020 season (includes shots as of 2021/7/8) in NHL from [`moneypuck`](http://www.stat.cmu.edu/cmsac/sure/2021/materials/data/xy_examples/moneypuck_shots_2020.csv)
 
+--
 
+* There's 137 columns of 1,146,536 rows
 
+--
 
-* There's 137 columns of 1,146,536 shots taken
+* Each row represent a singular shot taken; contain information about Player info, Info about the shot, Team context, and Game context
 
-* Each row and observation is a singular shot taken, contain information about Player info,Info about the shot,Team context,Game context
+--
 
 * We select 19 variables for our analysis
 
 
-<div id="qqkybgdesu" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="gbbosyuztr" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-#qqkybgdesu .gt_table {
+#gbbosyuztr .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -113,7 +113,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-left-color: #D3D3D3;
 }
 
-#qqkybgdesu .gt_heading {
+#gbbosyuztr .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -125,7 +125,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-right-color: #D3D3D3;
 }
 
-#qqkybgdesu .gt_title {
+#gbbosyuztr .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -135,7 +135,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-bottom-width: 0;
 }
 
-#qqkybgdesu .gt_subtitle {
+#gbbosyuztr .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -145,13 +145,13 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-top-width: 0;
 }
 
-#qqkybgdesu .gt_bottom_border {
+#gbbosyuztr .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qqkybgdesu .gt_col_headings {
+#gbbosyuztr .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -166,7 +166,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-right-color: #D3D3D3;
 }
 
-#qqkybgdesu .gt_col_heading {
+#gbbosyuztr .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -186,7 +186,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   overflow-x: hidden;
 }
 
-#qqkybgdesu .gt_column_spanner_outer {
+#gbbosyuztr .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -198,15 +198,15 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   padding-right: 4px;
 }
 
-#qqkybgdesu .gt_column_spanner_outer:first-child {
+#gbbosyuztr .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qqkybgdesu .gt_column_spanner_outer:last-child {
+#gbbosyuztr .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qqkybgdesu .gt_column_spanner {
+#gbbosyuztr .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -218,7 +218,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   width: 100%;
 }
 
-#qqkybgdesu .gt_group_heading {
+#gbbosyuztr .gt_group_heading {
   padding: 8px;
   color: #333333;
   background-color: #FFFFFF;
@@ -240,7 +240,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   vertical-align: middle;
 }
 
-#qqkybgdesu .gt_empty_group_heading {
+#gbbosyuztr .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -255,15 +255,15 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   vertical-align: middle;
 }
 
-#qqkybgdesu .gt_from_md > :first-child {
+#gbbosyuztr .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qqkybgdesu .gt_from_md > :last-child {
+#gbbosyuztr .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qqkybgdesu .gt_row {
+#gbbosyuztr .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -282,7 +282,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   overflow-x: hidden;
 }
 
-#qqkybgdesu .gt_stub {
+#gbbosyuztr .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -294,7 +294,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   padding-left: 12px;
 }
 
-#qqkybgdesu .gt_summary_row {
+#gbbosyuztr .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -304,7 +304,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   padding-right: 5px;
 }
 
-#qqkybgdesu .gt_first_summary_row {
+#gbbosyuztr .gt_first_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -314,7 +314,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-top-color: #D3D3D3;
 }
 
-#qqkybgdesu .gt_grand_summary_row {
+#gbbosyuztr .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -324,7 +324,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   padding-right: 5px;
 }
 
-#qqkybgdesu .gt_first_grand_summary_row {
+#gbbosyuztr .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -334,11 +334,11 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-top-color: #D3D3D3;
 }
 
-#qqkybgdesu .gt_striped {
+#gbbosyuztr .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qqkybgdesu .gt_table_body {
+#gbbosyuztr .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -347,7 +347,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-bottom-color: #D3D3D3;
 }
 
-#qqkybgdesu .gt_footnotes {
+#gbbosyuztr .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -361,13 +361,13 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-right-color: #D3D3D3;
 }
 
-#qqkybgdesu .gt_footnote {
+#gbbosyuztr .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding: 4px;
 }
 
-#qqkybgdesu .gt_sourcenotes {
+#gbbosyuztr .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -381,41 +381,41 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
   border-right-color: #D3D3D3;
 }
 
-#qqkybgdesu .gt_sourcenote {
+#gbbosyuztr .gt_sourcenote {
   font-size: 90%;
   padding: 4px;
 }
 
-#qqkybgdesu .gt_left {
+#gbbosyuztr .gt_left {
   text-align: left;
 }
 
-#qqkybgdesu .gt_center {
+#gbbosyuztr .gt_center {
   text-align: center;
 }
 
-#qqkybgdesu .gt_right {
+#gbbosyuztr .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qqkybgdesu .gt_font_normal {
+#gbbosyuztr .gt_font_normal {
   font-weight: normal;
 }
 
-#qqkybgdesu .gt_font_bold {
+#gbbosyuztr .gt_font_bold {
   font-weight: bold;
 }
 
-#qqkybgdesu .gt_font_italic {
+#gbbosyuztr .gt_font_italic {
   font-style: italic;
 }
 
-#qqkybgdesu .gt_super {
+#gbbosyuztr .gt_super {
   font-size: 65%;
 }
 
-#qqkybgdesu .gt_footnote_marks {
+#gbbosyuztr .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 65%;
@@ -463,13 +463,6 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
 <td class="gt_row gt_left">WRIST</td>
 <td class="gt_row gt_right">0</td>
 <td class="gt_row gt_right">0.03049790</td></tr>
-    <tr><td class="gt_row gt_right">2019</td>
-<td class="gt_row gt_right">5</td>
-<td class="gt_row gt_right">9.090277</td>
-<td class="gt_row gt_right">64</td>
-<td class="gt_row gt_left">TIP</td>
-<td class="gt_row gt_right">0</td>
-<td class="gt_row gt_right">0.11116200</td></tr>
   </tbody>
   
   
@@ -494,7 +487,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
 ### Calibration of Moneypuck xG Model
 
 
-&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-4-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 
 
@@ -504,13 +497,13 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
 ## Calibration on subsets: situation
 
 
-&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-6-1.png" width="50%" /&gt;&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-6-2.png" width="50%" /&gt;
+&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-5-1.png" width="50%" /&gt;&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-5-2.png" width="50%" /&gt;
 
 ---
 
 ## Calibration on subsets: shotType
 
-&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-7-1.png" width="50%" /&gt;&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-7-2.png" width="50%" /&gt;
+&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-6-1.png" width="50%" /&gt;&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-6-2.png" width="50%" /&gt;
 
 ---
 
@@ -521,9 +514,17 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
 ---
 
 
-## Heat Map
+## Shot on Goal Heatmap
 
-&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-9-1.png" width="504" /&gt;
+&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-8-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Each Outcome We Looked At
+
+
+&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-9-1.png" width="85%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -531,33 +532,14 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
 ## Multinomial Logistic Model
 
 
-```
-## # weights:  72 (55 variable)
-## initial  value 1153104.724016 
-## iter  10 value 967334.705888
-## iter  20 value 956693.741952
-## iter  30 value 956098.557517
-## iter  40 value 950311.126675
-## iter  50 value 944205.531368
-## iter  60 value 939670.274106
-## final  value 939620.817721 
-## converged
-```
+
+&lt;img src="EDA_0716_files/figure-html/coe_plot-1.png" width="504" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ##  Multinomial Logistic Model
 
-
-|      Goal| GeneratesRebound| GoalieFroze| PlayInZone| PlayOutsideZone| PlayStopped|
-|---------:|----------------:|-----------:|----------:|---------------:|-----------:|
-| 0.2573071|        0.0830377|   0.1560660|  0.2372322|       0.2523586|   0.0139984|
-| 0.1112829|        0.0527366|   0.2259690|  0.2707955|       0.3166003|   0.0226158|
-| 0.0385185|        0.0483035|   0.2412706|  0.2917083|       0.3592208|   0.0209783|
-| 0.0260040|        0.0386262|   0.2534790|  0.2848493|       0.3730984|   0.0239431|
-| 0.0756479|        0.0611154|   0.2219802|  0.2836922|       0.3333333|   0.0242311|
-
-
+&lt;img src="EDA_0716_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -568,10 +550,6 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
 
 
 #### Fell free to ask any quesitons!
----
-
-
-### Appendix
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

@@ -13,6 +13,13 @@ variable<- c("xGoal","arenaAdjustedShotDistance","shotWasOnGoal","shotPlayStoppe
 
 recent_season <- rbind(select(shots1019,all_of(variable)),select(shots2020,all_of(variable)))
 
+save(shots2020, file = "data.RData")
+save(shots0719, file = "data.RData")
+save(recent_season, file = "recent_season.RData")
+
+
+
+
 evenstrength <- 
   recent_season %>% 
   filter(xCordAdjusted %in% c(25:89),
@@ -206,7 +213,25 @@ ctable <- table(multi$outcome,predict(multi_mo))
 ctable
 
 
-# test --------------------------------------------------------------------
+multi_coe<-data.frame(summary(multi_mo)$coefficients) %>% 
+  select(2:11) 
+multi_coe<-multi_coe %>%
+  mutate(outcome=rownames(multi_coe)) %>% 
+  pivot_longer(multi_mo$vcoefnames[2:11],names_to = "variable")
+
+save(multi_coe, file = "multi_coe.RData")
+
+multi_coe %>%
+  ggplot(aes(x = outcome, y = variable)) +
+  geom_tile(aes(fill = value), color = "black") +
+  geom_text(aes(label=round(value, digits = 4)),
+            size=3,color = "black") +
+  scale_x_discrete(position = "top")+
+  scale_fill_distiller(palette='RdBu',direction=-1, limits=c(-1.2,1.2))+
+  theme_bw()+
+  labs(title="Coe")
+
+test --------------------------------------------------------------------
 
 library(stargazer)
 stargazer((summary(test)$coefficients/summary(test)$standard.errors), type = "html", 
