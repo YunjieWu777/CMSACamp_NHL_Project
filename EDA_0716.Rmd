@@ -279,7 +279,7 @@ evenstrength %>%
   labs(x = "Predicted Probability",
        y = "Actual Probability",
        size = "Number of Attempts",
-       title="Powerplay")+
+       title="Even Strength")+
   theme_reach()
 
 powerplay %>%
@@ -301,7 +301,7 @@ powerplay %>%
   labs(x = "Predicted Probability",
        y = "Actual Probability",
        size = "Number of Attempts",
-       title="Penalty Kill")+
+       title="Power Play")+
   theme_reach()
 
 ```
@@ -331,7 +331,7 @@ wristshot %>%
   labs(x = "Predicted Probability",
        y = "Actual Probability",
        size = "Number of Attempts",
-       title="Powerplay")+
+       title="Wrist Shot")+
   theme_reach()
 
 deflection %>%
@@ -353,7 +353,7 @@ deflection %>%
   labs(x = "Predicted Probability",
        y = "Actual Probability",
        size = "Number of Attempts",
-       title="Penalty Kill")+
+       title="Deflection")+
   theme_reach()
 
 ```
@@ -566,8 +566,6 @@ plot(Effect("shotType", multi_mo), multiline = T)
 
 ---
 
-
-### Conclusion
 
 ### Limitations and Next Step
 
