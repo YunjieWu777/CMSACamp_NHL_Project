@@ -386,9 +386,9 @@ plot1 <- g +
                    aes(x = yCordAdjusted,
                        y = xCordAdjusted,
                        # fill = after_stat(level)),
-                       z = xG_logit_even$fitted.values),
+                       z = xg_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = "black",
+                   color = xg_logit_even$fitted.values,
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -403,7 +403,7 @@ plot2 <- g +
                        # fill = after_stat(level)),
                        z = reb_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = "black",
+                   color = reb_logit_even$fitted.values,
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -418,7 +418,7 @@ plot3 <- g +
                        # fill = after_stat(level)),
                        z = froze_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = "black",
+                   color = froze_logit_even$fitted.values,
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -434,7 +434,7 @@ plot4 <-
                        # fill = after_stat(level)),
                        z = inZone_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = "black",
+                   color = inZone_logit_even$fitted.values,
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange")  +
@@ -449,7 +449,7 @@ plot5 <-g +
                        # fill = after_stat(level)),
                        z = outZone_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = "black",
+                   color = outZone_logit_even$fitted.values,
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -464,7 +464,7 @@ plot6 <- g +
                        # fill = after_stat(level)),
                        z = stop_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = "black",
+                   color = stop_logit_even$fitted.values,
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -479,7 +479,7 @@ plot7 <-  g +
                        # fill = after_stat(level)),
                        z = shotOnGoal_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = "black",
+                   color = shotOnGoal_logit_even$fitted.values,
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
