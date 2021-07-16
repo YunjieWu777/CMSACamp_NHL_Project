@@ -62,16 +62,30 @@ theme_reach <- function() {
 
 ```{r}
 # Load data
-shots2020 <- read_csv("data/shots_2020.csv")
-shots0719 <- read.csv("data/shots_2007-2019.csv")
+# shots2020 <- read_csv("data/shots_2020.csv")
+# shots0719 <- read.csv("data/shots_2007-2019.csv")
 
-# Filter data
-shots1019 <- shots0719 %>% 
-  filter(season>2009)
+load("shots1019.RData")
+load("shots2020.RData")
+load("recent_season.RData")
 
-variable<- c("arenaAdjustedShotDistance","shotWasOnGoal","shotPlayStopped","shotAngle","shotGoalieFroze","shotPlayContinuedInZone","shotPlayContinuedOutsideZone","awaySkatersOnIce","homeSkatersOnIce","season","shotAngleAdjusted","arenaAdjustedShotDistance","goal","shotGeneratedRebound", "xCordAdjusted", "yCordAdjusted","shotType","shotRush","shotRebound","xGoal")
-
-recent_season <- rbind(select(shots1019,all_of(variable)),select(shots2020,all_of(variable)))
+# recent_season <- 
+#  rbind(
+#    select(
+#      shots1019,
+#      shotGoalieFroze,shotPlayContinuedInZone,
+#      shotPlayContinuedOutsideZone,season,shotAngleAdjusted,
+#      arenaAdjustedShotDistance,goal,shotGeneratedRebound, 
+#      xCordAdjusted, yCordAdjusted, shotAngle, homeSkatersOnIce, 
+#      awaySkatersOnIce, shotType, shotRush, shotRebound, 
+#     shotWasOnGoal, xGoal, shotPlayStopped),
+#    select(shots2020,shotGoalieFroze,shotPlayContinuedInZone,
+#           shotPlayContinuedOutsideZone,season,
+#           shotAngleAdjusted,arenaAdjustedShotDistance,goal,
+#           shotGeneratedRebound, xCordAdjusted, yCordAdjusted, 
+#           shotAngle, homeSkatersOnIce, awaySkatersOnIce, 
+#           shotType, shotRush, shotRebound, shotWasOnGoal,
+#           xGoal, shotPlayStopped))
 ```
 
 ```{r}
@@ -124,15 +138,23 @@ ongoal_logit_even <- glm(shotWasOnGoal ~ shotAngleAdjusted+arenaAdjustedShotDist
                          data = evenstrength,
                          family = binomial("logit")) 
 
+stop_logit_even <- glm(shotPlayStopped ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+                   shotType+shotRush+shotRebound,
+                         data = evenstrength,
+                         family = binomial("logit")) 
 ```
 
 ## Research Question
 
-- Compare the performance of different model predicting the possible outcome of a shot
+- Compare the performance of different models predicting the possible outcomes of a shot
 
-- Here we consider 6 outcome contioned that the shot was on Goal: Goal, froze by golie, shot generated reboudn, play stop, play continued in zone, and play contined outside zone
+--
 
-- Test on subset: evenstrenth (5vs5) and powerplay (5vs4)
+- Started with the idea of an expected goals model
+
+--
+
+- Now focused on all of the potential outcomes resulting from a shot in hockey
 
 ---
 
@@ -167,7 +189,7 @@ grViz(diagram = "digraph flowchart {
       tab7 [label = '@@7']
       tab8 [label = '@@8']
       tab9 [label = '@@9']
-      tab10 [label == '@@10']
+      tab10 [label = '@@10']
       
       tab1 -> tab2;
       tab1 -> tab3;
@@ -194,7 +216,7 @@ grViz(diagram = "digraph flowchart {
       ")
 ```
 
-
+---
 
 ### The Moneypuck Dataset
 
@@ -376,11 +398,35 @@ knitr::include_graphics("EDA_0716_files/xG_logit_even.png")
 ---
 
 
-## Heat Map
+## Shot on Goal Heatmap
 
 ```{r}
 source('rink.r')  
 g <- rink 
+
+g + 
+  stat_summary_hex(data = evenstrength,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       # fill = after_stat(level)),
+                       z = ongoal_logit_even$fitted.values),
+                   binwidth = c(3,3),
+                   color = "black",
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+   ylim(25, 100) +
+  theme_bw()
+```
+
+
+---
+
+## Each Outcome We Looked At
+
+
+```{r}
+
 plot1 <- g + 
   stat_summary_hex(data = evenstrength,
                    aes(x = yCordAdjusted,
@@ -388,7 +434,7 @@ plot1 <- g +
                        # fill = after_stat(level)),
                        z = xg_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = xg_logit_even$fitted.values,
+                   color = "black",
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -401,9 +447,9 @@ plot2 <- g +
                    aes(x = yCordAdjusted,
                        y = xCordAdjusted,
                        # fill = after_stat(level)),
-                       z = reb_logit_even$fitted.values),
+                       z = rebound_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = reb_logit_even$fitted.values,
+                   color = "black",
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -416,9 +462,9 @@ plot3 <- g +
                    aes(x = yCordAdjusted,
                        y = xCordAdjusted,
                        # fill = after_stat(level)),
-                       z = froze_logit_even$fitted.values),
+                       z = freeze_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = froze_logit_even$fitted.values,
+                   color = "black",
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -432,9 +478,9 @@ plot4 <-
                    aes(x = yCordAdjusted,
                        y = xCordAdjusted,
                        # fill = after_stat(level)),
-                       z = inZone_logit_even$fitted.values),
+                       z = inzone_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = inZone_logit_even$fitted.values,
+                   color = "black",
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange")  +
@@ -447,9 +493,9 @@ plot5 <-g +
                    aes(x = yCordAdjusted,
                        y = xCordAdjusted,
                        # fill = after_stat(level)),
-                       z = outZone_logit_even$fitted.values),
+                       z = outzone_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = outZone_logit_even$fitted.values,
+                   color = "black",
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -464,7 +510,7 @@ plot6 <- g +
                        # fill = after_stat(level)),
                        z = stop_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = stop_logit_even$fitted.values,
+                   color = "black",
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -477,9 +523,9 @@ plot7 <-  g +
                    aes(x = yCordAdjusted,
                        y = xCordAdjusted,
                        # fill = after_stat(level)),
-                       z = shotOnGoal_logit_even$fitted.values),
+                       z = ongoal_logit_even$fitted.values),
                    binwidth = c(3,3),
-                   color = shotOnGoal_logit_even$fitted.values,
+                   color = "black",
                    fun = mean) +
   scale_fill_gradient(low = "darkblue",
                       high = "darkorange") +
@@ -487,8 +533,8 @@ plot7 <-  g +
    ylim(25, 100) +
   theme_bw()
 
-gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, plot7,
-                        nrow = 3)
+gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
+                        nrow = 2)
 
 
 ```
