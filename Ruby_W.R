@@ -3,6 +3,9 @@ library(tidyverse)
 library(haven)
 library(nnet)
 library(sjPlot)
+library (data.table)
+library (plyr)
+library (stringr)
 shots2020 <- read_csv("data/shots_2020.csv")
 shots0719 <- read.csv("data/shots_2007-2019.csv")
 
@@ -175,7 +178,7 @@ xG_logit_even$coefficients[3]
 
 recent_season <- rbind(select(shots1019,all_of(variable)),select(shots2020,all_of(variable)))
 
-multi <- recent_season %>% 
+multi <- evenstrength %>% 
   filter(shotWasOnGoal==1,
          !is.na(shotType),
          shotType!="")
@@ -213,13 +216,24 @@ ctable <- table(multi$outcome,predict(multi_mo))
 ctable
 
 
+sum(predict(multi_mo)!=multi$outcome)/nrow(multi)
+
 multi_coe<-data.frame(summary(multi_mo)$coefficients) %>% 
-  select(2:11) 
-multi_coe<-multi_coe %>%
+  select(2:11)%>% 
   mutate(outcome=rownames(multi_coe)) %>% 
   pivot_longer(multi_mo$vcoefnames[2:11],names_to = "variable")
 
+SE<- data.frame(summary(multi_mo)$standard.errors) %>% 
+  select(2:11)
+SE<- SE %>%
+  mutate(outcome=rownames(SE)) %>% 
+  pivot_longer(multi_mo$vcoefnames[2:11],names_to = "variable") %>% 
+  rename(se=value)
+
 save(multi_coe, file = "multi_coe.RData")
+
+predict(multi_mo, newdata = shots2020 ,type = "response")
+prediction(multi_mo,multi$outcome)
 
 multi_coe %>%
   ggplot(aes(x = outcome, y = variable)) +
@@ -239,3 +253,7 @@ stargazer((summary(test)$coefficients/summary(test)$standard.errors), type = "ht
 stargazer(test, type = "html", coef = list(test_rrr), p.auto = FALSE,
           out = "testrrr.htm")
 test_rrr <- exp(coef(test))
+
+
+
+
