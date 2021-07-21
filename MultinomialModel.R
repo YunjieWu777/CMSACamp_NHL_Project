@@ -76,6 +76,29 @@ init_loso_cv_preds <-
           })
 
 
+# LOSO Preds with X and Y Coordinates
+
+second_loso_cv_preds <-
+  map_dfr(unique(ongoal$season),
+          function(x) {
+            test_data <- ongoal %>%
+              filter(season == x)
+            train_data <- ongoal %>%
+              filter(season != x)
+            
+            exp_model <-
+              multinom(Outcome2 ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+                         shotType+shotRush+shotRebound,
+                       data = train_data)
+            predict(exp_model, newdata = test_data, type = "probs") %>%
+              as_tibble() %>%
+              mutate(Outcome2 = test_data$Outcome2,
+                     season = x,
+                     xcord = test_data$xCordAdjusted,
+                     ycord = test_data$yCordAdjusted)
+          })
+
+
 cv_loso_calibration_results <- init_loso_cv_preds %>%
   pivot_longer(Goal:PlayStopped,
                names_to = "next_score_type",
