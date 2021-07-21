@@ -10,8 +10,10 @@ library(reshape2)
 
 shots2020 <- read_csv("data/shots_2020.csv")
 
+load("shots1019.RData")
+
 evenstrength <- 
-  shots2020 %>% 
+  shots1019 %>% 
   filter(xCordAdjusted %in% c(25:89),
          yCordAdjusted %in% c(-42:42)) %>% 
   filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
@@ -22,7 +24,7 @@ ongoal <-
 
 
 ongoal <-
-  evenstrength %>%
+  ongoal %>%
   mutate(
     Outcome = case_when(shotGoalieFroze == 1 ~ "GoalieFroze",
                         goal == 1 ~ "Goal",
@@ -49,8 +51,62 @@ ongoal$Outcome2 <-
 
 test <- multinom(Outcome2 ~ shotAngleAdjusted+arenaAdjustedShotDistance+
                    shotType+shotRush+shotRebound,
-                 data = ongoal,
-                 Hess = TRUE)
+                 data = ongoal)
+
+# LOSO Preds --------------------------------------------------------------
+
+
+
+init_loso_cv_preds <-
+  map_dfr(unique(ongoal$season),
+          function(x) {
+            test_data <- ongoal %>%
+              filter(season == x)
+            train_data <- ongoal %>%
+              filter(season != x)
+            
+            exp_model <-
+              multinom(Outcome2 ~ shotAngleAdjusted+arenaAdjustedShotDistance+
+                         shotType+shotRush+shotRebound,
+                       data = train_data)
+            predict(exp_model, newdata = test_data, type = "probs") %>%
+              as_tibble() %>%
+              mutate(Outcome2 = test_data$Outcome2,
+                     season = x)
+          })
+
+
+cv_loso_calibration_results <- init_loso_cv_preds %>%
+  pivot_longer(Goal:PlayStopped,
+               names_to = "next_score_type",
+               values_to = "pred_prob") %>%
+  mutate(bin_pred_prob = round(pred_prob / 0.05) * .05) %>%
+  group_by(next_score_type, bin_pred_prob) %>%
+  summarize(n_plays = n(),
+            n_scoring_event = length(which(Outcome2 == next_score_type)),
+            bin_actual_prob = n_scoring_event / n_plays,
+            bin_se = sqrt((bin_actual_prob * (1 - bin_actual_prob)) / n_plays)) %>%
+  ungroup() %>%
+  mutate(bin_upper = pmin(bin_actual_prob + 2 * bin_se, 1),
+         bin_lower = pmax(bin_actual_prob - 2 * bin_se, 0))
+
+cv_loso_calibration_results %>%
+  ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) +
+  geom_abline(slope = 1, intercept = 0, color = "black", linetype = "dashed") +
+  geom_smooth(se = FALSE) + 
+  geom_point(aes(size = n_plays)) +
+  geom_errorbar(aes(ymin = bin_lower, ymax = bin_upper)) + #coord_equal() +   
+  scale_x_continuous(limits = c(0,1)) + 
+  scale_y_continuous(limits = c(0,1)) + 
+  labs(size = "Number of plays", x = "Estimated next score probability", 
+       y = "Observed next score probability") + 
+  theme_bw() + 
+  theme(strip.background = element_blank(), 
+        axis.text.x = element_text(angle = 90), 
+        legend.position = c(1, .05), legend.justification = c(1, 0)) +
+  facet_wrap(~ next_score_type, ncol = 4)
+# Testing different tables ------------------------------------------------
+
 
 summary(test)
 
