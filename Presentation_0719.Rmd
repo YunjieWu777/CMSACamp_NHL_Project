@@ -1,0 +1,128 @@
+---
+title: "Multinomial Logistic Model"
+author: 
+  - "Claire Dudley, Ruby Wu"
+date: "July 19th, 2021"
+output: 
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+    fig.retina = 3,
+    cache = FALSE,
+    echo = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.show = TRUE,
+    hiline = TRUE)
+```
+
+```{r xaringan-themer, include = FALSE, warning = FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#4d54a5",
+  white_color = "#FFFFFF",
+  background_color = "#FFFFFF",
+  base_font_size = "24px"
+)
+```
+
+```{r load-packages, warning = FALSE, message = FALSE, echo = FALSE}
+library(tidyverse)
+library(nnet)
+
+theme_reach <- function() {
+  theme_bw() +
+    theme(
+      legend.position = "bottom",
+      plot.title = element_text(size = 20, hjust = 0.5, face = "bold"),
+      plot.subtitle = element_text(size = 12, hjust = 0.5),
+      axis.title.x = element_text(size=16),
+      axis.title.y = element_text(size=16)
+    )
+}
+```
+
+
+```{r}
+load("recent_season.RData")
+load("multi_coe.RData")
+```
+
+
+```{r include = FALSE}
+multi <- recent_season %>% 
+  filter(shotWasOnGoal==1,
+         !is.na(shotType),
+         shotType!="",
+         homeSkatersOnIce==5 & awaySkatersOnIce==5)
+multi<-multi %>% 
+  mutate(outcome=case_when(shotGoalieFroze==1 ~ "GoalieFroze",
+                           goal==1 ~"Goal",
+                           shotGeneratedRebound == 1 ~ "GeneratesRebound",
+                           shotPlayContinuedInZone == 1 ~ "PlayInZone",
+                           shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
+                           shotPlayStopped == 1 ~ "PlayStopped"))
+
+multi$outcome <- relevel(as.factor(multi$outcome),ref="Goal")
+multi$shotType <- as.factor(multi$shotType)
+
+multi_mo <- multinom(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound, 
+                     data = multi,
+                     model=TRUE)
+```
+
+
+
+## Multinomial Logistic Model
+
+```{r coe_plot, fig.align="center"}
+multi_coe %>%
+  ggplot(aes(x = outcome, y = variable)) +
+  geom_tile(aes(fill = value), color = "black") +
+  geom_text(aes(label=round(value, digits = 4)),
+            size=3,color = "black") +
+  scale_x_discrete(position = "top")+
+  scale_fill_distiller(palette='RdBu',direction=-1, limits=c(-1.2,1.2))+
+  theme_reach()+
+  labs(title="Coefficient for Multinomial Logistic Model")
+```
+
+---
+
+## Multinomial Logistic Model
+
+```{r out.width="90%",fig.align='center',fig.height = 5}
+multi_coe%>% 
+  ggplot(aes(y=outcome,x=value))+
+  geom_point(size = 0.5)+
+  geom_errorbarh(aes(xmax=value+se, xmin=value-se), height = 0.15, colour = "red")+
+  coord_flip()+
+  facet_wrap(~ variable, ncol = 5)+
+  theme_reach()+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+---
+
+## The Error Rate is High
+
+```{r echo=TRUE}
+sum(predict(multi_mo)!=multi$outcome)/nrow(multi)
+```
+
+---
+
+
+## Next Step
+
+* Looking at non-parametric models (random forest, boosting) and comparing to our multinomial logistic regression model
+* Calibrate the multinomial logistic model
