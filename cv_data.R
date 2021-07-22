@@ -79,3 +79,58 @@ all_loso_cv_preds <-
           })
 
 save(all_loso_cv_preds, file = "all_loso_cv_preds.RData")
+
+
+
+# another version of all shots --------------------------------------------
+
+
+all2 <- recent_season %>% 
+  filter(!is.na(shotType),
+         shotType!="",
+         homeSkatersOnIce==5 & awaySkatersOnIce==5)%>% 
+  mutate(outcome=case_when(shotGoalieFroze==1 ~ "GoalieFroze",
+                           goal==1 ~"Goal",
+                           shotGeneratedRebound == 1 ~ "GeneratesRebound",
+                           shotPlayContinuedInZone == 1 ~ "PlayInZone",
+                           shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
+                           shotPlayStopped == 1 ~ "PlayStopped"),
+         outcome=relevel(as.factor(outcome),ref="Goal"),
+         shotType=as.factor(shotType))
+
+
+all_loso_cv_preds2 <-
+  map_dfr(unique(all2$season),
+          function(x) {
+            test_data <- all2 %>%
+              filter(season == x)
+            train_data <- all2 %>%
+              filter(season != x)
+            
+            ep_model <-
+              multinom(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound +
+                         shotWasOnGoal,
+                       data = train_data, maxit = 300)
+            
+            predict(ep_model, newdata = test_data, type = "probs") %>%
+              as_tibble() %>%
+              mutate(outcome = test_data$outcome,
+                     season = x,
+                     xcord = test_data$xCordAdjusted,
+                     ycord = test_data$yCordAdjusted)
+          })
+
+
+
+save(all_loso_cv_preds2, file = "all_loso_cv_preds2.RData")
+
+
+
+
+
+
+
+
+
+
+
