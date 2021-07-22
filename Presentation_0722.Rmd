@@ -53,16 +53,13 @@ theme_reach <- function() {
 ```{r}
 load("all_loso_cv_preds.RData")
 load("ongoal_loso_cv_preds.RData")
-init_loso_cv_preds <-
-  init_loso_cv_preds %>%
-  mutate(outcome = Outcome2)
-
+load("all_loso_cv_preds2.RData")
 ```
 
 
 ### Calibrate on ShotOnGoal 
 ```{r include=FALSE}
-ep_cv_loso_calibration_results <- init_loso_cv_preds %>%
+ep_cv_loso_calibration_results <- ongoal_loso_cv_preds %>%
   pivot_longer(Goal:PlayStopped,
                names_to = "outcome_type",
                values_to = "pred_prob") %>%
@@ -109,7 +106,7 @@ knitr::include_graphics("ongoal_heatmaps.png")
 ---
 
 
-## Calibrate on All Condition
+### Calibrate on All Condition
 
 ```{r include=FALSE}
 ep_cv_loso_calibration_results <- all_loso_cv_preds %>%
@@ -159,7 +156,7 @@ knitr::include_graphics("allshots_heatmaps.png")
 
 ---
 
-# Model with All Shots, Variable in Model for if Shot Hit Net
+### Model with All Shots, Variable in Model for if Shot Hit Net
 
 
 ```{r include=FALSE}
@@ -178,7 +175,7 @@ ep_cv_loso_calibration_results <- all_loso_cv_preds2 %>%
          bin_lower = pmax(bin_actual_prob - 2 * bin_se, 0))
 ```
 
-```{r fig.align='center',out.width="80%"}
+```{r fig.align='center',out.width="65%"}
 ep_cv_loso_calibration_results %>%
   ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) +
   geom_abline(slope = 1, intercept = 0, color = "black", linetype = "dashed") +
@@ -193,13 +190,13 @@ ep_cv_loso_calibration_results %>%
         legend.justification = c(1, 0),
         strip.background = element_blank(),
         axis.text.x = element_text(angle = 90)) +
-  facet_wrap(~ outcome_type, ncol = 4)+
+  facet_wrap(~ outcome_type, ncol = 3)+
   theme_reach()
 ```
 
 ---
 
-# Heat Maps for Model
+## Heat Maps for Model
 
 ```{r}
 knitr::include_graphics("allshots2_heatmaps.png")
