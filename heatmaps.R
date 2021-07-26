@@ -562,6 +562,129 @@ heatmaps <- gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
                                     nrow = 2)
 
 
+load("rf_preds.RData")
+
+
+# Goal
+
+plot1 <- g + 
+  stat_summary_hex(data = rf_preds,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = Goal,
+                       color = Goal),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  
+  ylim(25, 100) +
+  labs(title = "Goal",
+       fill = "Probability") + 
+  theme_bw()
+
+# Generates Rebound
+
+plot2 <- g + 
+  stat_summary_hex(data = rf_preds,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = GeneratesRebound,
+                       color = GeneratesRebound),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  ylim(25, 100) +
+  labs(title = "Generates Rebound",
+       fill = "Probability") +
+  theme_bw()
+
+# Goalie Froze
+
+plot3 <- g + 
+  stat_summary_hex(data = rf_preds,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = GoalieFroze,
+                       color = GoalieFroze),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  labs(title = "Goalie Froze Puck",
+       fill = "Probability") +
+  ylim(25, 100) +
+  theme_bw()
+
+# Play in Zone
+
+plot4 <- g + 
+  stat_summary_hex(data = rf_preds,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = PlayInZone,
+                       color = PlayInZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  ylim(25, 100) +
+  labs(title = "Play in Zone",
+       fill = "Probability") +
+  theme_bw()
+
+# Play Outside Zone
+
+plot5 <- g + 
+  stat_summary_hex(data = rf_preds,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = PlayOutsideZone,
+                       color = PlayOutsideZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  labs(title = "Play Outside Zone",
+       fill = "Probability") +
+  ylim(25, 100) +
+  theme_bw()
+
+# Play Stopped
+
+plot6 <- g + 
+  stat_summary_hex(data = rf_preds,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = PlayStopped,
+                       color = PlayStopped),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  ylim(25, 100) +
+  labs(title = "Play Stopped",
+       fill = "Probability") +
+  theme_bw()
+
+
+library(gridExtra)
+heatmaps <- gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
+                                    nrow = 2)
+
 
 # Testing different tables ------------------------------------------------
 
