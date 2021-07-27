@@ -38,6 +38,11 @@ model_data <- ongoal %>%
               shotAngleAdjusted, shotDistance,
                 shotType, shotRebound, shotRush)
 
+model_data2 <- ongoal %>%
+  dplyr::select(Outcome2, season,
+                shotAngleAdjusted, shotDistance,
+                shotType, shotRebound, shotRush, shooterName)
+
 model_data <- model_data %>%
   mutate(Outcome2 = as.factor(Outcome2))
 
@@ -65,6 +70,28 @@ loso_cv_preds <-
                      probability = TRUE)
             
           
+            predict(forest_model, data = test_data, type = "response")$predictions %>%
+              as_tibble() %>%
+              mutate(Outcome2 = test_data$Outcome2,
+                     season = x,
+                     xcord = )
+          })
+
+rf_oreds2 <- 
+  map_dfr(unique(model_data$season),
+          function(x) {
+            
+            test_data <- model_data %>%
+              filter(season == x)
+            train_data <- model_data %>%
+              filter(season != x)
+            
+            forest_model <-
+              ranger(Outcome2 ~., 
+                     data = train_data, num.trees = 200, # importance = "impurity",
+                     probability = TRUE)
+            
+            
             predict(forest_model, data = test_data, type = "response")$predictions %>%
               as_tibble() %>%
               mutate(Outcome2 = test_data$Outcome2,

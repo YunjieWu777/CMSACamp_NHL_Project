@@ -136,7 +136,7 @@ all_loso_cv_preds <-
                      ycord = test_data$yCordAdjusted)
           })
 
-save(all_loso_cv_preds, file = "all_loso_cv_preds.RData")
+save(all_loso_cv_preds, file = "data/all_loso_cv_preds.RData")
 
 
 
@@ -166,8 +166,7 @@ all_loso_cv_preds2 <-
               filter(season != x)
             
             ep_model <-
-              multinom(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound +
-                         shotWasOnGoal,
+              multinom(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound,
                        data = train_data, maxit = 300)
             
             predict(ep_model, newdata = test_data, type = "probs") %>%
