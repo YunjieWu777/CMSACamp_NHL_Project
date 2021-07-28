@@ -572,6 +572,14 @@ plot(Effect("shotType", multi_mo), multiline = T)
 
 ---
 
+## Heatmaps from Multinomial Models
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("multinom_heatmaps.png")
+```
+
+
+---
 
 ### Limitations and Next Step
 

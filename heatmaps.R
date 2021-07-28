@@ -56,6 +56,9 @@ test <- multinom(Outcome2 ~ shotAngleAdjusted+arenaAdjustedShotDistance+
 # LOSO Preds --------------------------------------------------------------
 
 
+# First LOSO preds we did -------------------------------------------------
+
+
 
 init_loso_cv_preds <-
   map_dfr(unique(ongoal$season),
@@ -165,7 +168,7 @@ cv_loso_calibration_results %>%
   facet_wrap(~ next_score_type, ncol = 4)
 
 
-# Heat maps ---------------------------------------------------------------
+# Heat maps 1 ---------------------------------------------------------------
 
 source('rink.r')  
 g <- rink 
@@ -189,8 +192,17 @@ plot1 <- g +
   
   ylim(25, 100) +
   labs(title = "Goal",
-       fill = "Probability") + 
-  theme_bw()
+       fill = "Probability"
+       ) + 
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()
+        )
 
 # Generates Rebound
 
@@ -208,8 +220,15 @@ plot2 <- g +
                       high = "darkorange") +
   ylim(25, 100) +
   labs(title = "Generates Rebound",
-       fill = "Probability") +
-  theme_bw()
+       fill = "Probability",
+       y = "Shots On Net",) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Goalie Froze
 
@@ -228,7 +247,14 @@ plot3 <- g +
   labs(title = "Goalie Froze Puck",
        fill = "Probability") +
   ylim(25, 100) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Play in Zone
 
@@ -247,7 +273,14 @@ plot4 <- g +
   ylim(25, 100) +
   labs(title = "Play in Zone",
        fill = "Probability") +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Play Outside Zone
 
@@ -266,7 +299,14 @@ plot5 <- g +
   labs(title = "Play Outside Zone",
        fill = "Probability") +
   ylim(25, 100) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Play Stopped
 
@@ -285,11 +325,18 @@ plot6 <- g +
   ylim(25, 100) +
   labs(title = "Play Stopped",
        fill = "Probability") +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 library(gridExtra)
-heatmaps <- gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
-                        nrow = 2)
+# heatmaps <- gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
+                    #    nrow = 2)
 
 
 # With missed net
@@ -316,9 +363,15 @@ plot7 <- g +
                        high = "darkorange") +
   
   ylim(25, 100) +
-  labs(title = "Goal",
-       fill = "Probability") + 
-  theme_bw()
+  labs(fill = "Probability") + 
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Generates Rebound
 
@@ -335,9 +388,15 @@ plot8 <- g +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
   ylim(25, 100) +
-  labs(title = "Generates Rebound",
-       fill = "Probability") +
-  theme_bw()
+  labs(fill = "Probability",
+       y = "All Shots") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Goalie Froze
 
@@ -353,10 +412,16 @@ plot9 <- g +
                       high = "darkorange") +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
-  labs(title = "Goalie Froze Puck",
-       fill = "Probability") +
+  labs(fill = "Probability") +
   ylim(25, 100) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Play in Zone
 
@@ -373,9 +438,15 @@ plot10 <- g +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
   ylim(25, 100) +
-  labs(title = "Play in Zone",
-       fill = "Probability") +
-  theme_bw()
+  labs(fill = "Probability") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Play Outside Zone
 
@@ -391,10 +462,16 @@ plot11 <- g +
                       high = "darkorange") +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
-  labs(title = "Play Outside Zone",
-       fill = "Probability") +
+  labs(fill = "Probability") +
   ylim(25, 100) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Play Stopped
 
@@ -411,15 +488,21 @@ plot12 <- g +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
   ylim(25, 100) +
-  labs(title = "Play Stopped",
-       fill = "Probability") +
-  theme_bw()
+  labs(fill = "Probability") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 
-library(gridExtra)
-heatmaps <- gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
-                                    nrow = 2)
-# All shots, missed net not an outcome
+# library(gridExtra)
+# heatmaps <- gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
+  #                                   nrow = 2)
+# All shots
 
 load("data/missnet_loso_cv_preds.RData")
 
@@ -444,9 +527,15 @@ plot <- g +
                        high = "darkorange") +
   
   ylim(25, 100) +
-  labs(title = "Goal",
-       fill = "Probability") + 
-  theme_bw()
+  labs(fill = "Probability") + 
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Generates Rebound
 
@@ -463,9 +552,15 @@ plot13 <- g +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
   ylim(25, 100) +
-  labs(title = "Generates Rebound",
-       fill = "Probability") +
-  theme_bw()
+  labs(fill = "Probability",
+       y = "Shots that Missed Net") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Goalie Froze
 
@@ -481,10 +576,16 @@ plot14 <- g +
                       high = "darkorange") +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
-  labs(title = "Goalie Froze Puck",
-       fill = "Probability") +
+  labs(fill = "Probability") +
   ylim(25, 100) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Play in Zone
 
@@ -501,9 +602,15 @@ plot15 <- g +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
   ylim(25, 100) +
-  labs(title = "Play in Zone",
-       fill = "Probability") +
-  theme_bw()
+  labs(fill = "Probability") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Play Outside Zone
 
@@ -519,10 +626,16 @@ plot16 <- g +
                       high = "darkorange") +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
-  labs(title = "Play Outside Zone",
-       fill = "Probability") +
+  labs(fill = "Probability") +
   ylim(25, 100) +
-  theme_bw()
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 # Play Stopped
 
@@ -539,9 +652,15 @@ plot17 <- g +
   scale_color_gradient(low = "darkblue",
                        high = "darkorange") +
   ylim(25, 100) +
-  labs(title = "Play Stopped",
-       fill = "Probability") +
-  theme_bw()
+  labs(fill = "Probability") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 
 library(gridExtra)
@@ -550,6 +669,555 @@ heatmaps <- gridExtra::grid.arrange(plot2, plot3, plot4, plot5, plot6, plot1,
                                     plot12, plot7, plot13, plot14, plot15, plot16,
                                     plot17,
                                     nrow = 3, ncol = 6)
+
+
+# Heatmaps 2 --------------------------------------------------------------
+
+source('rink.r')  
+g <- rink 
+
+# Goal
+load("data/secondloso.RData")
+
+
+plot1 <- g + 
+  stat_summary_hex(data = second_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = Goal,
+                       color = Goal),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0,0.37)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0,0.37)) +
+  
+  ylim(25, 100) +
+  labs(title = "Goal",
+       fill = "Probability"
+  ) + 
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()
+  )
+
+# Generates Rebound
+
+plot2 <- g + 
+  stat_summary_hex(data = second_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = GeneratesRebound,
+                       color = GeneratesRebound),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.015,0.10)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.015,0.10)) +
+  ylim(25, 100) +
+  labs(title = "Generates Rebound",
+       fill = "Probability",
+       y = "Shots On Net",) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Goalie Froze
+
+plot3 <- g + 
+  stat_summary_hex(data = second_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = GoalieFroze,
+                       color = GoalieFroze),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.02,0.5)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.02,0.5)) +
+  labs(title = "Goalie Froze Puck",
+       fill = "Probability") +
+  ylim(25, 100) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Play in Zone
+
+plot4 <- g + 
+  stat_summary_hex(data = second_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = PlayInZone,
+                       color = PlayInZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.18,0.45)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.18,0.45)) +
+  ylim(25, 100) +
+  labs(title = "Play in Zone",
+       fill = "Probability") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Play Outside Zone
+
+plot5 <- g + 
+  stat_summary_hex(data = second_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = PlayOutsideZone,
+                       color = PlayOutsideZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.18,.54)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.18,0.54)) +
+  labs(title = "Play Outside Zone",
+       fill = "Probability") +
+  ylim(25, 100) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Play Stopped
+
+plot6 <- g + 
+  stat_summary_hex(data = second_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = PlayStopped,
+                       color = PlayStopped),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.015,0.073)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.015,0.073)) +
+  ylim(25, 100) +
+  labs(title = "Play Stopped",
+       fill = "Probability") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+library(gridExtra)
+# heatmaps <- gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
+#    nrow = 2)
+
+
+# With missed net
+
+load("data/all_loso_cv_preds2.RData")
+
+all_loso_cv_preds2 <-
+  all_loso_cv_preds2 %>%
+  filter(xcord <= 90)
+
+# Goal
+
+plot7 <- g + 
+  stat_summary_hex(data = all_loso_cv_preds2,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = Goal,
+                       color = Goal),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0,0.37)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0,0.37)) +
+  
+  ylim(25, 100) +
+  labs(fill = "Probability",
+       color = "Probability") + 
+  theme_bw() +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Generates Rebound
+
+plot8 <- g + 
+  stat_summary_hex(data = all_loso_cv_preds2,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = GeneratesRebound,
+                       color = GeneratesRebound),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.015,0.10)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.015,0.10)) +
+  ylim(25, 100) +
+  labs(fill = "Probability",
+       y = "All Shots") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Goalie Froze
+
+plot9 <- g + 
+  stat_summary_hex(data = all_loso_cv_preds2,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = GoalieFroze,
+                       color = GoalieFroze),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.02,0.5)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.02,0.5)) +
+  labs(fill = "Probability") +
+  ylim(25, 100) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Play in Zone
+
+plot10 <- g + 
+  stat_summary_hex(data = all_loso_cv_preds2,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = PlayInZone,
+                       color = PlayInZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.18,0.45)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.18,0.45)) +
+  ylim(25, 100) +
+  labs(fill = "Probability",
+       color = "Probability") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Play Outside Zone
+
+plot11 <- g + 
+  stat_summary_hex(data = all_loso_cv_preds2,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = PlayOutsideZone,
+                       color = PlayOutsideZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.18,.54)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.18,0.54)) +
+  labs(fill = "Probability") +
+  ylim(25, 100) +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Play Stopped
+
+plot12 <- g + 
+  stat_summary_hex(data = all_loso_cv_preds2,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = PlayStopped,
+                       color = PlayStopped),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.015,0.073)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.015,0.073)) +
+  ylim(25, 100) +
+  labs(fill = "Probability") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+
+# library(gridExtra)
+# heatmaps <- gridExtra::grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6,
+#                                   nrow = 2)
+# All shots
+
+load("data/missnet_loso_cv_preds.RData")
+
+missnet_loso_cv_preds <-
+  missnet_loso_cv_preds %>%
+  filter(xcord <= 90,
+  )
+
+# Goal
+
+plot <- g + 
+  stat_summary_hex(data = missnet_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = Goal,
+                       color = Goal),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  scale_manual_continuous(limits = c(0.02:0.10)) +
+  
+  ylim(25, 100) +
+  labs(fill = "Probability") + 
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Generates Rebound
+
+plot13 <- g + 
+  stat_summary_hex(data = missnet_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = GeneratesRebound,
+                       color = GeneratesRebound),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.015,0.10)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.015,0.10)) +
+  ylim(25, 100) +
+  labs(fill = "Probability",
+       color = "Probability",
+       y = "Shots that Missed Net") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Goalie Froze
+
+plot14 <- g + 
+  stat_summary_hex(data = missnet_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = GoalieFroze,
+                       color = GoalieFroze),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.02,0.5)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.02,0.5)) +
+  labs(fill = "Probability",
+       color = "Probability") +
+  ylim(25, 100) +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Play in Zone
+
+plot15 <- g + 
+  stat_summary_hex(data = missnet_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = PlayInZone,
+                       color = PlayInZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.18,0.45)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.18,0.45)) +
+  ylim(25, 100) +
+  labs(fill = "Probability",
+       color = "Probability") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Play Outside Zone
+
+plot16 <- g + 
+  stat_summary_hex(data = missnet_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = PlayOutsideZone,
+                       color = PlayOutsideZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.18,.54)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.18,0.54)) +
+  labs(fill = "Probability",
+       color = "Probability") +
+  ylim(25, 100) +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+# Play Stopped
+
+plot17 <- g + 
+  stat_summary_hex(data = missnet_loso_cv_preds,
+                   aes(x = ycord,
+                       y = xcord,
+                       z = PlayStopped,
+                       color = PlayStopped),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange",
+                      limits = c(0.015,0.073)) +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange",
+                       limits = c(0.015,0.073)) +
+  ylim(25, 100) +
+  labs(fill = "Probability",
+       color = "Probability") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+
+library(gridExtra)
+heatmaps <- gridExtra::grid.arrange(plot2, plot3, plot4, plot5, plot6, plot1,
+                                    plot8, plot9, plot10, plot11,
+                                    plot12, plot7, plot13, plot14, plot15, plot16,
+                                    plot17,
+                                    nrow = 3, ncol = 6)
+
+
+# Random Forest Heatmaps --------------------------------------------------
+
 
 
 load("data/rf_preds.RData")
