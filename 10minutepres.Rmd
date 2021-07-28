@@ -313,6 +313,11 @@ ep_cv_loso_calibration_results %>%
 
 ### Random Forest Heatmaps
 
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("rf_allheatmaps.png")
+```
+
+
 ---
 
 ### Random Forest Heatmaps with Legend
