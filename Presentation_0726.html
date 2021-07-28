@@ -4,6 +4,7 @@
     <title>Multinomial Logistic Model</title>
     <meta charset="utf-8" />
     <meta name="author" content="Claire Dudley, Ruby Wu" />
+    <script src="Presentation_0726_files/header-attrs/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -28,9 +29,12 @@ class: center, middle, inverse, title-slide
 
 ### Problem
 
+* Comparing models including all shots, shots on net, and shots that missed the net
+
+
 ---
 
-### All Condition: Calibration Plot
+### All Shots: Calibration Plot
 
 
 
@@ -40,7 +44,9 @@ class: center, middle, inverse, title-slide
 
 ---
 
-### All Condition: Heat Map
+### All Shots: Heat Map
+
+&lt;img src="allshots_heatmaps.png" width="1039" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -48,25 +54,54 @@ class: center, middle, inverse, title-slide
 
 
 
-&lt;img src="Presentation_0726_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="Presentation_0726_files/figure-html/unnamed-chunk-6-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 ### On Goal: Heat Map
 
----
-
-### Miss net: Calibration Plot
-
-
-
-&lt;img src="Presentation_0726_files/figure-html/unnamed-chunk-7-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-
-### Miss net: Heat Map
+&lt;img src="ongoal_heatmaps.png" width="1117" style="display: block; margin: auto;" /&gt;
 
 ---
 
-## Heat Map Comparation
+### Missed net: Calibration Plot
+
+
+
+&lt;img src="Presentation_0726_files/figure-html/unnamed-chunk-9-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Missed net: Heat Map
+
+&lt;img src="missednet_heatmaps.png" width="1037" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+### Heat Map Comparison
+
+&lt;img src="allconditions_heatmaps.png" width="1276" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Random Forest Model: Calibration Plot
+
+
+
+&lt;img src="Presentation_0726_files/figure-html/unnamed-chunk-13-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+### RF Model: Heat Map
+
+&lt;img src="rfongoal_heatmaps.png" width="1088" style="display: block; margin: auto;" /&gt;
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
