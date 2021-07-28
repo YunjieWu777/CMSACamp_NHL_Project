@@ -2,7 +2,7 @@
 title: "Multinomial Logistic Model"
 author: 
   - "Claire Dudley, Ruby Wu"
-date: "July 21th, 2021"
+date: "July 26th, 2021"
 output: 
   xaringan::moon_reader:
     css: xaringan-themer.css
@@ -37,6 +37,8 @@ style_mono_accent(base_color = "#4d54a5",
 ```{r load-packages, warning = FALSE, message = FALSE, echo = FALSE}
 library(tidyverse)
 library(nnet)
+library(gt)
+library(gridExtra)
 
 theme_reach <- function() {
   theme_bw() +
@@ -56,6 +58,10 @@ load("data/all_loso_cv_preds2.RData")
 load("data/ongoal_loso_cv_preds.RData")
 load("data/secondloso.RData")
 load("data/missnet_loso_cv_preds.RData")
+
+load("data/all_gl_var.RData")
+load("data/all_gl.RData")
+
 load("data/rf_preds.RData")
 ```
 
@@ -257,8 +263,54 @@ ep_cv_loso_calibration_results %>%
 ```
 
 
+---
 
+class: center, middle
 
+### Binomial Logistic Models with Player effects
+
+---
+
+### Top/bottom 5 goalies/shooters on rebound for all condition
+
+```{r, echo=FALSE, out.width="60%",fig.align='center'}
+knitr::include_graphics("Presentation_0726_files/rebound_all_gl_bw.png")
+```
+
+---
+
+### Goalie variance for all condition
+
+```{r fig.align='center',out.width="100%", fig.height=4.5}
+plot1<- ggplot(all_gl_var)+
+  geom_point(aes(x=outcome,y=goalie_var))+
+  labs(title="Goalie Variance")+
+  theme_reach()+
+  ylim(0,0.06)
+
+plot2<- ggplot(all_gl_var)+
+  geom_point(aes(x=outcome,y=shooter_var))+
+  labs(title="Shooter Variance")+
+  theme_reach()+
+  ylim(0,0.06)
+
+gridExtra::grid.arrange(plot1, plot2, nrow = 1)
+
+```
+
+---
+
+### Table for all condition
+
+* normalize the result
+
+```{r}
+var<-c("goal","rebound","froze","inZone","outZone","stop")
+head(dplyr::select(all_gl,all_of(var))) %>% gt()
+```
+
+---
+=======
 ---
 
 ### RF Model: Heat Map
@@ -267,4 +319,6 @@ ep_cv_loso_calibration_results %>%
 knitr::include_graphics("rfongoal_heatmaps.png")
 ```
 
+### Next Step
 
+* <p> Calibration plot and heat map for all 3 conditions
