@@ -2,7 +2,7 @@
 title: "Multinomial Logistic Model"
 author: 
   - "Claire Dudley, Ruby Wu"
-date: "July 21th, 2021"
+date: "July 26th, 2021"
 output: 
   xaringan::moon_reader:
     css: xaringan-themer.css
@@ -56,16 +56,23 @@ theme_reach <- function() {
 ```{r}
 load("data/all_loso_cv_preds2.RData")
 load("data/ongoal_loso_cv_preds.RData")
+load("data/secondloso.RData")
 load("data/missnet_loso_cv_preds.RData")
+
 load("data/all_gl_var.RData")
 load("data/all_gl.RData")
+
+load("data/rf_preds.RData")
 ```
 
 ### Problem
 
+* Comparing models including all shots, shots on net, and shots that missed the net
+
+
 ---
 
-### All Condition: Calibration Plot
+### All Shots: Calibration Plot
 
 
 
@@ -106,21 +113,25 @@ ep_cv_loso_calibration_results %>%
 
 ---
 
-### All Condition: Heat Map
+### All Shots: Heat Map
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("allshots_heatmaps.png")
+```
 
 ---
 
 ### On Goal: Calibration Plot
 
 ```{r include=FALSE}
-ep_cv_loso_calibration_results <- ongoal_loso_cv_preds %>%
+ep_cv_loso_calibration_results <- second_loso_cv_preds %>%
   pivot_longer(Goal:PlayStopped,
                names_to = "outcome_type",
                values_to = "pred_prob") %>%
   mutate(bin_pred_prob = round(pred_prob / 0.03) * 0.03) %>%
   group_by(outcome_type, bin_pred_prob) %>%
   dplyr::summarize(n_plays = n(),
-            n_scoring_event = length(which(outcome == outcome_type)),
+            n_scoring_event = length(which(Outcome2 == outcome_type)),
             bin_actual_prob = n_scoring_event / n_plays,
             bin_se = sqrt((bin_actual_prob * (1 - bin_actual_prob)) / n_plays)) %>% 
   ungroup() %>%
@@ -151,9 +162,13 @@ ep_cv_loso_calibration_results %>%
 
 ### On Goal: Heat Map
 
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("ongoal_heatmaps.png")
+```
+
 ---
 
-### Miss net: Calibration Plot
+### Missed net: Calibration Plot
 
 ```{r include=FALSE}
 ep_cv_loso_calibration_results <- missnet_loso_cv_preds %>%
@@ -190,11 +205,63 @@ ep_cv_loso_calibration_results %>%
   theme_reach()
 ```
 
-### Miss net: Heat Map
+---
+
+### Missed net: Heat Map
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("missednet_heatmaps.png")
+```
+
+
 
 ---
 
-### Heat Map Comparation
+### Heat Map Comparison
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("allconditions_heatmaps.png")
+```
+
+---
+
+### Random Forest Model: Calibration Plot
+
+```{r include=FALSE}
+ep_cv_loso_calibration_results <- rf_preds %>%
+  pivot_longer(Goal:PlayStopped,
+               names_to = "outcome_type",
+               values_to = "pred_prob") %>%
+  mutate(bin_pred_prob = round(pred_prob / 0.03) * 0.03) %>%
+  group_by(outcome_type, bin_pred_prob) %>%
+  dplyr::summarize(n_plays = n(),
+            n_scoring_event = length(which(Outcome2.x == outcome_type)),
+            bin_actual_prob = n_scoring_event / n_plays,
+            bin_se = sqrt((bin_actual_prob * (1 - bin_actual_prob)) / n_plays)) %>% 
+  ungroup() %>%
+  mutate(bin_upper = pmin(bin_actual_prob + 2 * bin_se, 1),
+         bin_lower = pmax(bin_actual_prob - 2 * bin_se, 0))
+```
+
+```{r fig.align='center',out.width="70%"}
+ep_cv_loso_calibration_results %>%
+  ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) +
+  geom_abline(slope = 1, intercept = 0, color = "black", linetype = "dashed") +
+  geom_smooth(se = FALSE) +
+  geom_point(aes(size = n_plays)) +
+  geom_errorbar(aes(ymin = bin_lower, ymax = bin_upper)) + 
+  coord_equal() +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_bw() +
+  theme(legend.position = c(1, .05),
+        legend.justification = c(1, 0),
+        strip.background = element_blank(),
+        axis.text.x = element_text(angle = 90)) +
+  facet_wrap(~ outcome_type, ncol = 3)+
+  theme_reach()
+```
+
 
 ---
 
@@ -243,6 +310,14 @@ head(dplyr::select(all_gl,all_of(var))) %>% gt()
 ```
 
 ---
+=======
+---
+
+### RF Model: Heat Map
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("rfongoal_heatmaps.png")
+```
 
 ### Next Step
 

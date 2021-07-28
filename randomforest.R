@@ -11,6 +11,10 @@ evenstrength <-
   filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
 
 
+
+# On goal model -----------------------------------------------------------
+
+
 ongoal <- evenstrength %>% 
   filter(shotWasOnGoal==1,
          !is.na(shotType),
@@ -37,6 +41,11 @@ model_data <- ongoal %>%
   dplyr::select(Outcome2, season,
               shotAngleAdjusted, shotDistance,
                 shotType, shotRebound, shotRush)
+
+model_data2 <- ongoal %>%
+  dplyr::select(Outcome2, season,
+                shotAngleAdjusted, shotDistance,
+                shotType, shotRebound, shotRush, shooterName)
 
 model_data <- model_data %>%
   mutate(Outcome2 = as.factor(Outcome2))
@@ -65,6 +74,28 @@ loso_cv_preds <-
                      probability = TRUE)
             
           
+            predict(forest_model, data = test_data, type = "response")$predictions %>%
+              as_tibble() %>%
+              mutate(Outcome2 = test_data$Outcome2,
+                     season = x,
+                     xcord = )
+          })
+
+rf_oreds2 <- 
+  map_dfr(unique(model_data$season),
+          function(x) {
+            
+            test_data <- model_data %>%
+              filter(season == x)
+            train_data <- model_data %>%
+              filter(season != x)
+            
+            forest_model <-
+              ranger(Outcome2 ~., 
+                     data = train_data, num.trees = 200, # importance = "impurity",
+                     probability = TRUE)
+            
+            
             predict(forest_model, data = test_data, type = "response")$predictions %>%
               as_tibble() %>%
               mutate(Outcome2 = test_data$Outcome2,
@@ -125,6 +156,67 @@ save(rf_preds, file = "rf_preds.RData")
 
 
 
+# All shots model ---------------------------------------------------------
+
+allshots <-
+  evenstrength %>%
+  mutate(
+    Outcome = case_when(shotGoalieFroze == 1 ~ "GoalieFroze",
+                        goal == 1 ~ "Goal",
+                        shotGeneratedRebound == 1 ~ "GeneratesRebound",
+                        shotPlayContinuedInZone == 1 ~ "PlayInZone",
+                        shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
+                        shotPlayStopped == 1 ~ "PlayStopped"))
+
+allshots <-
+  allshots %>%
+  filter(!is.na(shotType),
+       shotType!="")
+
+allshots <-
+  allshots %>%
+  mutate(Outcome = as.factor(Outcome))
+
+allshots$Outcome2 <- 
+  relevel(allshots$Outcome, ref = "Goal")
+
+model_data_all <- allshots %>%
+  dplyr::select(Outcome2, season,
+                shotAngleAdjusted, shotDistance,
+                shotType, shotRebound, shotRush)
+
+
+model_data_all <- model_data_all %>%
+  mutate(Outcome2 = as.factor(Outcome2))
+
+library(ranger)
+allshots_rf <- ranger(Outcome2 ~., data = model_data_all, num.trees = 50, importance = "impurity")
+
+library(vip)
+vip(allshots_rf, geom = "point") + theme_bw()
+
+allshots_loso_rf <- 
+  map_dfr(unique(model_data_all$season),
+          function(x) {
+            
+            test_data <- model_data_all %>%
+              filter(season == x)
+            train_data <- model_data_all %>%
+              filter(season != x)
+            
+            forest_model <-
+              ranger(Outcome2 ~., 
+                     data = train_data, num.trees = 200, # importance = "impurity",
+                     probability = TRUE)
+            
+            
+            predict(forest_model, data = test_data, type = "response")$predictions %>%
+              as_tibble() %>%
+              mutate(Outcome2 = test_data$Outcome2,
+                     season = x)
+          })
+
+save(allshots_loso_rf, file = "allshots_loso.RData")
 
 # KNN ---------------------------------------------------------------------
 
