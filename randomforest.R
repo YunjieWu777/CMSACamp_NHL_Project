@@ -218,6 +218,85 @@ allshots_loso_rf <-
 
 save(allshots_loso_rf, file = "allshots_loso.RData")
 
+# Set up to make heatmaps
+
+allshots_loso_rf$row_num <- seq.int(nrow(allshots_loso_rf))
+allshots$row_num <- seq.int(nrow(allshots))
+
+
+allshots_rf <- left_join(allshots_loso_rf, allshots, by = "row_num")
+
+save(allshots_rf, file = "data/allshots_rf.RData")
+
+
+# Missed shots model ------------------------------------------------------
+
+offgoal <- evenstrength %>% 
+  filter(shotWasOnGoal==0,
+         !is.na(shotType),
+         shotType!="")
+
+offgoal <-
+  offgoal %>%
+  mutate(
+    Outcome = case_when(shotGoalieFroze == 1 ~ "GoalieFroze",
+                        shotGeneratedRebound == 1 ~ "GeneratesRebound",
+                        shotPlayContinuedInZone == 1 ~ "PlayInZone",
+                        shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
+                        shotPlayStopped == 1 ~ "PlayStopped"))
+
+offgoal <-
+  offgoal %>%
+  mutate(Outcome = as.factor(Outcome))
+
+offgoal$Outcome2 <- 
+  relevel(offgoal$Outcome, ref = "PlayOutsideZone")
+
+model_data_miss <- offgoal %>%
+  dplyr::select(Outcome2, season,
+                shotAngleAdjusted, shotDistance,
+                shotType, shotRebound, shotRush)
+
+model_data_miss <- model_data_miss %>%
+  mutate(Outcome2 = as.factor(Outcome2))
+
+library(ranger)
+miss_shot_rf <- ranger(Outcome2 ~., data = model_data_miss, num.trees = 50, importance = "impurity")
+
+library(vip)
+vip(miss_shot_rf, geom = "point") + theme_bw()
+
+miss_rf <- 
+  map_dfr(unique(model_data_miss$season),
+          function(x) {
+            
+            test_data <- model_data_miss %>%
+              filter(season == x)
+            train_data <- model_data_miss %>%
+              filter(season != x)
+            
+            forest_model <-
+              ranger(Outcome2 ~., 
+                     data = train_data, num.trees = 200, # importance = "impurity",
+                     probability = TRUE)
+            
+            
+            predict(forest_model, data = test_data, type = "response")$predictions %>%
+              as_tibble() %>%
+              mutate(Outcome2 = test_data$Outcome2,
+                     season = x)
+          })
+
+# Set up to make heatmaps
+
+miss_rf$row_num <- seq.int(nrow(miss_rf))
+offgoal$row_num <- seq.int(nrow(offgoal))
+
+
+miss_rf <- left_join(miss_rf, offgoal, by = "row_num")
+
+save(miss_rf, file = "data/miss_rf.RData")
+
 # KNN ---------------------------------------------------------------------
 
 library(caret)
