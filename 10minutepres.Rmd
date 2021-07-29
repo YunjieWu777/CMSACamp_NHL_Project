@@ -519,7 +519,13 @@ mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
 
 * Can look at specific players and goalies and predict their shot outcomes
 
-* 
+--
+
+* We are looking at more than just Expected Goals - we are including other outcomes that could occur from a shot
+
+--
+
+* Continuing this research, would want to look at heatmaps at a goalie / player level - how do goalies and players differ in expected outcomes from "average" goalies/players?
 
 
 
