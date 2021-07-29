@@ -3,7 +3,7 @@ title: "Predicting the Outcome of a Shot in the NHL"
 author: 
   - "Claire Dudley"
   - "Ruby Wu"
-date: "July 16th, 2021"
+date: "July 29th, 2021"
 output: 
   xaringan::moon_reader:
     css: xaringan-themer.css
