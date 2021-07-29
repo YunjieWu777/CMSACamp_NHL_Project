@@ -38,6 +38,7 @@ style_mono_accent(base_color = "#4d54a5",
 ```{r load-packages, warning = FALSE, message = FALSE, echo = FALSE}
 library(tidyverse)
 library(haven)
+library(merTools)
 library(nnet)
 library(ggthemes)
 library(gt)
@@ -66,8 +67,8 @@ theme_reach <- function() {
 # shots2020 <- read_csv("data/shots_2020.csv")
 # shots0719 <- read.csv("data/shots_2007-2019.csv")
 
-load("data/shots1019.RData")
-load("data/shots2020.RData")
+#load("data/shots1019.RData")
+#load("data/shots2020.RData")
 load("data/recent_season.RData")
 load("data/all_loso_cv_preds2.RData")
 
@@ -142,7 +143,7 @@ Loaded in the dataset of all the shots from 2010 season to 2020 season (includes
 --
 
 ```{r display-data, warning = FALSE, message = FALSE, echo = FALSE}
-recent_season %>% slice_head(n = 4) %>% select(season,awaySkatersOnIce,shotAngleAdjusted,xCordAdjusted,shotType,goal,xGoal) %>% gt()
+recent_season %>% slice_head(n = 4) %>% dplyr::select(season,awaySkatersOnIce,shotAngleAdjusted,xCordAdjusted,shotType,goal,xGoal) %>% gt()
 ```
 
 ---
@@ -250,7 +251,7 @@ powerplay %>%
 
 --
 
-* Our predictor variables were: Distance from net, shot angle, shot type, whether the shot was a rebound, whether the shot was on a rush
+* Our predictor variables were: shot distance, shot angle, shot type, shot rebound, shot rush
 
 --
 
@@ -262,8 +263,21 @@ powerplay %>%
 
 ---
 
+### Predictor Variables
 
-## Heatmaps from Multinomial Models
+- Shot distance: Shot distance adjusted for arena recording bias
+- Shot angle: Absolute value of the shot angle
+- Shot type: Type of the shot (7 in total)
+- Shot rebound: Set to 1 if the last event was a shot and within 3 seconds of this shot
+- Shot rush: Set to 1 if the last event was in another zone and within 4 seconds of this shot
+
+```{r, echo=FALSE, out.width="40%",fig.align='center'}
+knitr::include_graphics("10minutepres_file/rink.png")
+```
+
+---
+
+### Heatmaps from Multinomial Models
 
 ```{r, echo=FALSE, fig.align='center'}
 knitr::include_graphics("multinom_heatmaps.png")
@@ -271,7 +285,7 @@ knitr::include_graphics("multinom_heatmaps.png")
 
 ---
 
-## Heatmaps with Legends for Each Column
+### Heatmaps with Legends for Each Column
 
 ```{r, echo=FALSE, fig.align='center'}
 knitr::include_graphics("allconditionslegend_heatmaps.png")
@@ -344,9 +358,155 @@ knitr::include_graphics("rflegend_heatmaps.png")
 
 ---
 
-### Player Effects Model
 
 
+### Player Effects Model: Calibration Plot
+
+```{r fig.align='center',out.width="65%"}
+
+load("data/all_gl.RData")
+
+ep_cv_loso_calibration_results <- all_gl %>%
+  pivot_longer(PlayOutsideZone:Stop,
+               names_to = "outcome",
+               values_to = "pred_prob") %>%
+  mutate(bin_pred_prob = round(pred_prob / 0.05) * 0.05) %>% 
+  group_by(outcome, bin_pred_prob) %>%
+  summarize(n_plays = n(),
+            n_scoring_event = length(which(outcome_type == outcome)),
+            bin_actual_prob = n_scoring_event / n_plays,
+            bin_se = sqrt((bin_actual_prob * (1 - bin_actual_prob)) / n_plays)) %>%
+  ungroup() %>%
+  mutate(bin_upper = pmin(bin_actual_prob + 2 * bin_se, 1),
+         bin_lower = pmax(bin_actual_prob - 2 * bin_se, 0))
+
+
+ep_cv_loso_calibration_results %>%
+  ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) +
+  geom_abline(slope = 1, intercept = 0, color = "black", linetype = "dashed") +
+  geom_smooth(se = FALSE) +
+  geom_point(aes(size = n_plays)) +
+  geom_errorbar(aes(ymin = bin_lower, ymax = bin_upper)) + 
+  coord_equal() +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_bw() +
+  theme(legend.position = c(1, .05),
+        legend.justification = c(1, 0),
+        strip.background = element_blank(),
+        axis.text.x = element_text(angle = 90)) +
+  facet_wrap(~ outcome, ncol = 3)+
+  theme_reach()
+```
+
+
+
+---
+
+### Player Effects Model: Heatmap
+
+```{r, echo=FALSE, out.width="100%",fig.align='center'}
+knitr::include_graphics("10minutepres_file/pl_all_heatmap.png")
+```
+
+---
+
+### Shooter and Goalie variance
+
+```{r fig.align='center',out.width="100%", fig.height=4.5}
+
+load("data/all_gl_var.RData")
+
+plot1<- ggplot(all_gl_var)+
+  geom_point(aes(x=outcome,y=goalie_var))+
+  labs(title="Goalie Variance")+
+  theme_reach()+
+  ylim(0,0.06)
+
+plot2<- ggplot(all_gl_var)+
+  geom_point(aes(x=outcome,y=shooter_var))+
+  labs(title="Shooter Variance")+
+  theme_reach()+
+  ylim(0,0.06)
+
+gridExtra::grid.arrange(plot1, plot2, nrow = 1)
+
+```
+
+---
+
+### Top/bottom 5 goalies/shooters for rebound 
+
+```{r}
+rebound_all<-read_rds("model/rebound_all.rds")
+froze_all<-read_rds("model/froze_all.rds")
+
+pe<- function(x){
+player_effects <- REsim(x)
+
+player_effects %>%
+  as_tibble() %>%
+  group_by(groupFctr) %>%
+  arrange(desc(mean)) %>%
+  slice(1:5, (n() - 4):n()) %>%
+  ggplot(aes(x = reorder(groupID, mean))) +
+  geom_point(aes(y = mean)) +
+  geom_errorbar(aes(ymin = mean - 2 * sd,
+                    ymax = mean + 2 * sd)) +
+  facet_wrap(~groupFctr, ncol = 1, scales = "free_y") +
+  geom_vline(xintercept = 0, linetype = "dashed",
+             color = "red") +
+  coord_flip() +
+  theme_bw()
+}
+
+```
+
+
+```{r, echo=FALSE, out.width="60%",fig.align='center'}
+pe(rebound_all)
+```
+
+---
+### Top/bottom 5 goalies/shooters for froze 
+
+```{r, echo=FALSE, out.width="60%",fig.align='center'}
+pe(froze_all)
+```
+
+---
+
+### Compare Baire Score
+
+* Multinomial logistic regression Model
+
+```{r}
+mean(((all_loso_cv_preds2$outcome_type=="Goal")-all_loso_cv_preds2$Goal)^2)+
+mean(((all_loso_cv_preds2$outcome_type=="Rebound")-all_loso_cv_preds2$Rebound)^2)+
+mean(((all_loso_cv_preds2$outcome_type=="GoalieFroze")-all_loso_cv_preds2$GoalieFroze)^2)+
+mean(((all_loso_cv_preds2$outcome_type=="PlayInZone")-all_loso_cv_preds2$PlayInZone)^2)+
+mean(((all_loso_cv_preds2$outcome_type=="Stop")-all_loso_cv_preds2$Stop)^2)+
+mean(((all_loso_cv_preds2$outcome_type=="PlayOutsideZone")-all_loso_cv_preds2$PlayOutsideZone)^2)
+```
+
+
+* Random Forest Model
+
+```{r}
+
+```
+
+
+* Individual binomial logistic regression model with player effects
+
+```{r}
+mean(((all_gl$outcome_type=="Goal")-all_gl$Goal)^2)+
+mean(((all_gl$outcome_type=="Rebound")-all_gl$Rebound)^2)+
+mean(((all_gl$outcome_type=="GoalieFroze")-all_gl$GoalieFroze)^2)+
+mean(((all_gl$outcome_type=="PlayInZone")-all_gl$PlayInZone)^2)+
+mean(((all_gl$outcome_type=="Stop")-all_gl$Stop)^2)+
+mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
+```
 
 ---
 

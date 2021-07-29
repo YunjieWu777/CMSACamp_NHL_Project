@@ -28,11 +28,15 @@ recent_season<-recent_season %>%
          goalie_name_id=as.factor(goalie_name_id),
          shooter_name_id=as.factor(shooter_name_id),
          outcome = as.integer(outcome_type) -1,
+         angle_org = shotAngleAdjusted,
+         distance_org = arenaAdjustedShotDistance,
          arenaAdjustedShotDistance=scale(arenaAdjustedShotDistance),
          shotAngleAdjusted=scale(shotAngleAdjusted))
 
 set.seed(777)
-recent_season<- recent_season %>% sample_frac(0.1)
+recent_season<- recent_season %>% sample_frac(0.1) %>% 
+  filter(xCordAdjusted %in% c(25:89),
+         yCordAdjusted %in% c(-42:42))
 
 
 gl <- function(){
@@ -40,7 +44,27 @@ gl <- function(){
           shotType+shotRush+shotRebound+
           (1|shooter_name_id) + (1|goalie_name_id),
         data = test, family = "binomial",control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5)))
-  }
+}
+
+
+pe<- function(x){
+player_effects <- REsim(x)
+
+player_effects %>%
+  as_tibble() %>%
+  group_by(groupFctr) %>%
+  arrange(desc(mean)) %>%
+  slice(1:5, (n() - 4):n()) %>%
+  ggplot(aes(x = reorder(groupID, mean))) +
+  geom_point(aes(y = mean)) +
+  geom_errorbar(aes(ymin = mean - 2 * sd,
+                    ymax = mean + 2 * sd)) +
+  facet_wrap(~groupFctr, ncol = 1, scales = "free_y") +
+  geom_vline(xintercept = 0, linetype = "dashed",
+             color = "red") +
+  coord_flip() +
+  theme_bw()
+}
 
 # On Goal -----------------------------------------------------------------
 
@@ -213,6 +237,8 @@ stop_miss<-glmer(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+
 
 # All ----------------------------------------------------------------------
 
+pe()
+
 # Rebound
 
 test<- recent_season %>% 
@@ -220,23 +246,9 @@ test<- recent_season %>%
 
 rebound_all<-gl()
 
-#
-player_effects <- REsim(rebound_all)
+write_rds(rebound_all, "model/rebound_all.rds")
 
-player_effects %>%
-  as_tibble() %>%
-  group_by(groupFctr) %>%
-  arrange(desc(mean)) %>%
-  slice(1:5, (n() - 4):n()) %>%
-  ggplot(aes(x = reorder(groupID, mean))) +
-  geom_point(aes(y = mean)) +
-  geom_errorbar(aes(ymin = mean - 2 * sd,
-                    ymax = mean + 2 * sd)) +
-  facet_wrap(~groupFctr, ncol = 1, scales = "free_y") +
-  geom_vline(xintercept = 0, linetype = "dashed",
-             color = "red") +
-  coord_flip() +
-  theme_bw()
+pe(rebound_all)
 
 # Goal
 
@@ -246,6 +258,7 @@ test<- recent_season %>%
                              TRUE ~0))
 
 goal_all<-gl()
+write_rds(goal_all, "model/goal_all.rds")
 
 # Froze
 
@@ -256,7 +269,7 @@ test<- recent_season %>%
 
 froze_all<-gl()
 
-
+write_rds(froze_all, "model/froze_all.rds")
 
 # In Zone
 
@@ -266,6 +279,7 @@ test<- recent_season %>%
                              TRUE ~0))
 
 inZone_all<-gl()
+write_rds(inZone_all, "model/inZone_all.rds")
 
 # Stopped
 
@@ -275,7 +289,7 @@ test<- recent_season %>%
                              TRUE ~0))
 
 stop_all<-gl()
-
+write_rds(stop_all, "model/stop_all.rds")
 
 ## Create Table
 
@@ -286,14 +300,47 @@ all_gl<- tibble(rebound_all = exp(predict(rebound_all,newdata=recent_season, typ
                 stop_all = exp(predict(stop_all,newdata=recent_season, type = "link",allow.new.levels = TRUE))) 
 
 all_gl<- all_gl %>% 
-  mutate(outZone=1/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
-         rebound=rebound_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
-         goal= goal_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
-         froze=froze_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
-         inZone=inZone_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
-         stop=stop_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all))
+  mutate(PlayOutsideZone=1/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         Rebound=rebound_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         Goal= goal_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         GoalieFroze=froze_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         PlayInZone=inZone_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         Stop=stop_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all))
 
-all_gl<-cbind(all_gl,)
+all_gl<-cbind(all_gl,recent_season[,15:16],recent_season[,27])
+colnames(all_gl)[14]<-"outcome_type"
+
+ep_cv_loso_calibration_results <- all_gl %>%
+  pivot_longer(PlayOutsideZone:Stop,
+               names_to = "outcome",
+               values_to = "pred_prob") %>%
+  mutate(bin_pred_prob = round(pred_prob / 0.05) * 0.05) %>% 
+  group_by(outcome, bin_pred_prob) %>%
+  summarize(n_plays = n(),
+            n_scoring_event = length(which(outcome_type == outcome)),
+            bin_actual_prob = n_scoring_event / n_plays,
+            bin_se = sqrt((bin_actual_prob * (1 - bin_actual_prob)) / n_plays)) %>%
+  ungroup() %>%
+  mutate(bin_upper = pmin(bin_actual_prob + 2 * bin_se, 1),
+         bin_lower = pmax(bin_actual_prob - 2 * bin_se, 0))
+
+
+ep_cv_loso_calibration_results %>%
+  ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) +
+  geom_abline(slope = 1, intercept = 0, color = "black", linetype = "dashed") +
+  geom_smooth(se = FALSE) +
+  geom_point(aes(size = n_plays)) +
+  geom_errorbar(aes(ymin = bin_lower, ymax = bin_upper)) + 
+  coord_equal() +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_bw() +
+  theme(legend.position = c(1, .05),
+        legend.justification = c(1, 0),
+        strip.background = element_blank(),
+        axis.text.x = element_text(angle = 90)) +
+  facet_wrap(~ outcome, ncol = 3)
+
 save(all_gl,file="data/all_gl.RData")
 
 
@@ -317,22 +364,34 @@ VarCorr(rebound_all) %>% as_tibble() %>% mutate(icc = vcov / sum(vcov)) %>% dply
 
 # Heat map & fake data frame ----------------------------------------------
 
-
-df = expand.grid(xcord=-25:25, ycord=23:90)
+df <- expand.grid(ycord=-42:42, xcord=23:90)
 df<-df %>% 
-  mutate(shotAngleAdjusted=atan(xcord/abs(89-ycord))/0.0174532925,
-         arenaAdjustedShotDistance= sqrt(xcord^2+(ycord-89)^2),
-         shotType=NA,
-         shotRush=0,
-         shotRebound=0,
-         shooter_name_id=NA,
-         goalie_name_id=NA)
+  mutate(shotAngleAdjusted=((atan(ycord/89-xcord)/0.0174532925)-mean(recent_season$angle_org))/sd(recent_season$angle_org),
+         arenaAdjustedShotDistance= (sqrt(ycord^2+(xcord-89)^2)-mean(recent_season$distance_org))/sd(recent_season$distance_org),
+         shotType=as.factor("BACK"),
+         shotRush=as.factor(0),
+         shotRebound=as.factor(0),
+         shooter_name_id=as.factor("Oscar Klefbom-8476472"),
+         goalie_name_id=as.factor("Pekka Rinne-8471469"),
+         angle_org=atan(ycord/abs(89-xcord))/0.0174532925,
+         distance_org=sqrt(ycord^2+(xcord-89)^2))
 
-source('rink.r')  
-g <- rink
+df<-df %>% 
+  mutate(rebound_all = exp(predict(rebound_all,newdata=df, type = "link",allow.new.levels = TRUE)),
+         goal_all = exp(predict(goal_all,newdata=df, type = "link",allow.new.levels = TRUE)),
+         froze_all = exp(predict(froze_all,newdata=df, type = "link",allow.new.levels = TRUE)),
+         inZone_all = exp(predict(inZone_all,newdata=df, type = "link",allow.new.levels = TRUE)),
+         stop_all = exp(predict(stop_all,newdata=df, type = "link",allow.new.levels = TRUE)),
+         outZone=1/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         rebound=rebound_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         goal= goal_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         froze=froze_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         inZone=inZone_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         stop=stop_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all))
+         
 
-g + 
-  stat_summary_hex(data = all_gl,
+g+ 
+  stat_summary_hex(data = df,
                    aes(x = ycord,
                        y = xcord,
                        z = goal,
@@ -349,4 +408,155 @@ g +
        fill = "Probability") + 
   theme_bw()
 
+source('rink.r')  
+g <- rink
 
+plot1<-g + 
+  stat_summary_hex(data = all_gl,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = goal,
+                       color = goal),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  
+  ylim(25, 100) +
+  labs(title = "Goal",
+       fill = "Probability") + 
+  theme_bw()
+
+plot2<-g + 
+  stat_summary_hex(data = all_gl,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = rebound,
+                       color = rebound),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  
+  ylim(25, 100) +
+  labs(title = "Rebound",
+       fill = "Probability") + 
+  theme_bw()
+
+plot3<-g + 
+  stat_summary_hex(data = all_gl,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = froze,
+                       color = froze),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  
+  ylim(25, 100) +
+  labs(title = "Froze",
+       fill = "Probability") + 
+  theme_bw()
+
+plot4<-g + 
+  stat_summary_hex(data = all_gl,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = inZone,
+                       color = inZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  
+  ylim(25, 100) +
+  labs(title = "In Zone",
+       fill = "Probability") + 
+  theme_bw()
+
+plot5<-g + 
+  stat_summary_hex(data = all_gl,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = outZone,
+                       color = outZone),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  
+  ylim(25, 100) +
+  labs(title = "Out Zone",
+       fill = "Probability") + 
+  theme_bw()
+
+plot6<-g + 
+  stat_summary_hex(data = all_gl,
+                   aes(x = yCordAdjusted,
+                       y = xCordAdjusted,
+                       z = stop,
+                       color = stop),
+                   binwidth = c(3,3),
+                   fun = mean) +
+  scale_fill_gradient(low = "darkblue",
+                      high = "darkorange") +
+  scale_color_gradient(low = "darkblue",
+                       high = "darkorange") +
+  
+  ylim(25, 100) +
+  labs(title = "Stop",
+       fill = "Probability") + 
+  theme_bw()
+
+gridExtra::grid.arrange(plot1, plot2,plot3,plot4,plot5,plot6, nrow = 2)
+
+
+
+
+
+ep_cv_loso_calibration_results <- all_gl %>%
+  pivot_longer(outZone:stop,
+               names_to = "outcome",
+               values_to = "pred_prob") %>%
+  mutate(bin_pred_prob = round(pred_prob / 0.03) * 0.03) %>%
+  group_by(outcome_type, bin_pred_prob) %>%
+  dplyr::summarize(n_plays = n(),
+                   n_scoring_event = length(which(outcome == outcome_type)),
+                   bin_actual_prob = n_scoring_event / n_plays,
+                   bin_se = sqrt((bin_actual_prob * (1 - bin_actual_prob)) / n_plays)) %>% 
+  ungroup() %>%
+  mutate(bin_upper = pmin(bin_actual_prob + 2 * bin_se, 1),
+         bin_lower = pmax(bin_actual_prob - 2 * bin_se, 0))
+
+ep_cv_loso_calibration_results %>%
+  ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) +
+  geom_abline(slope = 1, intercept = 0, color = "black", linetype = "dashed") +
+  geom_smooth(se = FALSE) +
+  geom_point(aes(size = n_plays)) +
+  geom_errorbar(aes(ymin = bin_lower, ymax = bin_upper)) + 
+  coord_equal() +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_bw() +
+  theme(legend.position = c(1, .05),
+        legend.justification = c(1, 0),
+        strip.background = element_blank(),
+        axis.text.x = element_text(angle = 90)) +
+  facet_wrap(~ outcome_type, ncol = 3)
+
+
+pe(stop_all)
+
+
+g+ theme_bw()
