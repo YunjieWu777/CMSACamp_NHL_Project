@@ -319,16 +319,17 @@ ep_cv_loso_calibration_results %>%
 ### Heatmaps from Multinomial Models
 
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("multinom_heatmaps.png")
+knitr::include_graphics("allconditionslegend_heatmaps.png")
 ```
 
 ---
 
-### Heatmaps with Legends for Each Column
+### Heatmaps from Multinomial Models
 
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("allconditionslegend_heatmaps.png")
+knitr::include_graphics("multinom_heatmaps.png")
 ```
+
 
 ---
 
@@ -342,20 +343,21 @@ knitr::include_graphics("rf_calibration.png")
 
 ---
 
-### Random Forest Heatmaps
-
-```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("rf_allheatmaps.png")
-```
-
-
----
-
 ### Random Forest Heatmaps with Legend
 
 
 ```{r, echo=FALSE, fig.align='center'}
 knitr::include_graphics("rflegend_heatmaps.png")
+```
+
+
+
+---
+
+### Random Forest Heatmaps
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("rf_allheatmaps.png")
 ```
 
 
@@ -527,6 +529,9 @@ mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
 
 * Continuing this research, would want to look at heatmaps at a goalie / player level - how do goalies and players differ in expected outcomes from "average" goalies/players?
 
+--
+
+* If you have any questions you are welcome to come to the Q&A session at 3 to 4 on July 20th!
 
 
 
