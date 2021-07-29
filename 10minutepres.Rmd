@@ -365,7 +365,7 @@ knitr::include_graphics("rflegend_heatmaps.png")
 
 ### Player Effects Model: Calibration Plot
 
-```{r fig.align='center',out.width="65%"}
+```{r fig.align='center',out.width="75%"}
 
 load("data/all_gl.RData")
 
