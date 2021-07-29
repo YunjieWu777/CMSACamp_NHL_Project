@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Predicting the Outcome of a Shot in the NHL</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Claire Dudley, Ruby Wu" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Predicting the Outcome of a Shot in the NHL
+### Claire Dudley, Ruby Wu
+### July 29th, 2021
+
+---
+
+
+
+
+
+
+
+
+
+
+
+## Research Question
+
+- Compare the performance of different models predicting the possible outcomes of a shot
+
+--
+
+- Started with the idea of an expected goals model
+
+--
+
+- Now focused on all of the potential outcomes resulting from a shot in hockey
+
+--
+
+- Want to find the best way to estimate the value of a shot attempt, and potentially a player's impact on that value
+
+---
+
+### What Are the Potential Outcomes from a Shot?
+
+* First, shot can either hit the net or miss the net.
+
+--
+
+* If shot hits the net, it is either a goal or not a goal
+
+--
+
+* If shot hits the net and is not a goal, there are several possible outcomes of that shot coded in the Moneypuck dataset
+
+---
+
+## Flow Chat for Shot Outcomes
+
+&lt;img src="10minutepres_files/simpleflowchart.png" width="1102" style="display: block; margin: auto;" /&gt;
+
+---
+
+### The Moneypuck Dataset
+
+Loaded in the dataset of all the shots from 2010 season to 2020 season (includes shots as of 2021/7/8) in NHL from [`moneypuck`](http://www.stat.cmu.edu/cmsac/sure/2021/materials/data/xy_examples/moneypuck_shots_2020.csv)
+
+--
+
+* There's 137 columns of 1,146,536 rows
+
+--
+
+* Each row represent a singular shot taken; contains information about Player info, Info about the shot, Team context, and Game context
+
+--
+
+<div id="tecvwpxyfw" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#tecvwpxyfw .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#tecvwpxyfw .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tecvwpxyfw .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#tecvwpxyfw .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#tecvwpxyfw .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tecvwpxyfw .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tecvwpxyfw .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#tecvwpxyfw .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#tecvwpxyfw .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#tecvwpxyfw .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#tecvwpxyfw .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#tecvwpxyfw .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#tecvwpxyfw .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#tecvwpxyfw .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#tecvwpxyfw .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#tecvwpxyfw .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#tecvwpxyfw .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#tecvwpxyfw .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tecvwpxyfw .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#tecvwpxyfw .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tecvwpxyfw .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#tecvwpxyfw .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#tecvwpxyfw .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tecvwpxyfw .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tecvwpxyfw .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#tecvwpxyfw .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tecvwpxyfw .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#tecvwpxyfw .gt_left {
+  text-align: left;
+}
+
+#tecvwpxyfw .gt_center {
+  text-align: center;
+}
+
+#tecvwpxyfw .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#tecvwpxyfw .gt_font_normal {
+  font-weight: normal;
+}
+
+#tecvwpxyfw .gt_font_bold {
+  font-weight: bold;
+}
+
+#tecvwpxyfw .gt_font_italic {
+  font-style: italic;
+}
+
+#tecvwpxyfw .gt_super {
+  font-size: 65%;
+}
+
+#tecvwpxyfw .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 65%;
+}
+</style>
+<table class="gt_table">
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">season</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">awaySkatersOnIce</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">shotAngleAdjusted</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">xCordAdjusted</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">shotType</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">goal</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">xGoal</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_right">2019</td>
+<td class="gt_row gt_right">5</td>
+<td class="gt_row gt_right">14.036243</td>
+<td class="gt_row gt_right">85</td>
+<td class="gt_row gt_left">TIP</td>
+<td class="gt_row gt_right">1</td>
+<td class="gt_row gt_right">0.22504500</td></tr>
+    <tr><td class="gt_row gt_right">2019</td>
+<td class="gt_row gt_right">5</td>
+<td class="gt_row gt_right">31.239215</td>
+<td class="gt_row gt_right">28</td>
+<td class="gt_row gt_left">SLAP</td>
+<td class="gt_row gt_right">0</td>
+<td class="gt_row gt_right">0.00793583</td></tr>
+    <tr><td class="gt_row gt_right">2019</td>
+<td class="gt_row gt_right">4</td>
+<td class="gt_row gt_right">2.009554</td>
+<td class="gt_row gt_right">32</td>
+<td class="gt_row gt_left">SNAP</td>
+<td class="gt_row gt_right">0</td>
+<td class="gt_row gt_right">0.04660110</td></tr>
+    <tr><td class="gt_row gt_right">2019</td>
+<td class="gt_row gt_right">4</td>
+<td class="gt_row gt_right">20.409883</td>
+<td class="gt_row gt_right">46</td>
+<td class="gt_row gt_left">WRIST</td>
+<td class="gt_row gt_right">0</td>
+<td class="gt_row gt_right">0.03049790</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+
+---
+
+### About Moneypuck's Expected Goals Model
+
+* Predicts probability of each shot being a goal
+
+* Uses distance from net, angle of shot, type of shot, and what happened before the shot
+
+* Built on 800,000 shots in the NHL from 2007 - 2015
+
+* Built using gradient boosting
+
+
+---
+
+### Calibration of Moneypuck xG Model
+
+
+&lt;img src="10minutepres_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+## Calibration on subsets: situation
+
+
+&lt;img src="10minutepres_files/figure-html/unnamed-chunk-4-1.png" width="50%" /&gt;&lt;img src="10minutepres_files/figure-html/unnamed-chunk-4-2.png" width="50%" /&gt;
+
+---
+
+### Building a Multinomial Logistic Regression Model
+
+* Created an outcome variable for each shot representing the "outcome" of the shot, this was our response variable
+
+--
+
+* Our predictor variables were: shot distance, shot angle, shot type, shot rebound, shot rush
+
+--
+
+* Looked at shots only taken in even strength situations; meaning, 5 players on the ice for both teams
+
+--
+
+* Built 3 models: one including all shots, one with just shots on net, and one with shots that missed the net
+
+---
+
+### Predictor Variables
+
+- Shot distance: Shot distance adjusted for arena recording bias
+- Shot angle: Absolute value of the shot angle
+- Shot type: Type of the shot (7 in total)
+- Shot rebound: Set to 1 if the last event was a shot and within 3 seconds of this shot
+- Shot rush: Set to 1 if the last event was in another zone and within 4 seconds of this shot
+
+&lt;img src="10minutepres_files/rink.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Heatmaps from Multinomial Models
+
+&lt;img src="multinom_heatmaps.png" width="1222" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Heatmaps with Legends for Each Column
+
+&lt;img src="allconditionslegend_heatmaps.png" width="1229" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+### All Shots Model: Calibration Plot
+
+
+
+
+&lt;img src="10minutepres_files/figure-html/unnamed-chunk-9-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Random Forest Calibration Plot
+
+
+---
+
+### Random Forest Heatmaps
+
+&lt;img src="rf_allheatmaps.png" width="1060" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+### Random Forest Heatmaps with Legend
+
+
+&lt;img src="rflegend_heatmaps.png" width="1274" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+
+### Player Effects Model: Calibration Plot
+
+&lt;img src="10minutepres_files/figure-html/unnamed-chunk-12-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+### Player Effects Model: Heatmap
+
+&lt;img src="10minutepres_files/pl_all_heatmap.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Shooter and Goalie variance
+
+&lt;img src="10minutepres_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Top/bottom 5 goalies/shooters for rebound 
+
+
+
+
+&lt;img src="10minutepres_files/figure-html/unnamed-chunk-16-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+### Top/bottom 5 goalies/shooters for froze 
+
+&lt;img src="10minutepres_files/figure-html/unnamed-chunk-17-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Compare Brier Score
+
+* Multinomial logistic regression Model
+
+
+```
+## [1] 0.7107121
+```
+
+
+* Random Forest Model
+
+
+```
+## [1] 0.7132008
+```
+
+
+* Individual binomial logistic regression model with player effects
+
+
+```
+## [1] 0.6442002
+```
+
+---
+
+### Why is this Useful?
+
+* Can look at specific players and goalies and predict their shot outcomes
+
+*
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

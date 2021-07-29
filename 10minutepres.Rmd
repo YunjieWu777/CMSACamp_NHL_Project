@@ -1,9 +1,8 @@
 ---
 title: "Predicting the Outcome of a Shot in the NHL"
 author: 
-  - "Claire Dudley"
-  - "Ruby Wu"
-date: "July 16th, 2021"
+  - "Claire Dudley, Ruby Wu"
+date: "July 29th, 2021"
 output: 
   xaringan::moon_reader:
     css: xaringan-themer.css
@@ -123,7 +122,7 @@ powerplay <-
 ## Flow Chat for Shot Outcomes
 
 ````{r, echo=FALSE, fig.align='center',}
-knitr::include_graphics("simpleflowchart.png")
+knitr::include_graphics("10minutepres_files/simpleflowchart.png")
 ```
 
 ---
@@ -272,7 +271,7 @@ powerplay %>%
 - Shot rush: Set to 1 if the last event was in another zone and within 4 seconds of this shot
 
 ```{r, echo=FALSE, out.width="40%",fig.align='center'}
-knitr::include_graphics("10minutepres_file/rink.png")
+knitr::include_graphics("10minutepres_files/rink.png")
 ```
 
 ---
@@ -329,7 +328,10 @@ ep_cv_loso_calibration_results %>%
         strip.background = element_blank(),
         axis.text.x = element_text(angle = 90)) +
   facet_wrap(~ outcome_type, ncol = 3)+
-  theme_reach()
+  theme_reach()+
+  labs(x = "Predicted Probability",
+       y = "Actual Probability",
+       size = "Number of Attempts")
 ```
 
 ---
@@ -396,7 +398,10 @@ ep_cv_loso_calibration_results %>%
         strip.background = element_blank(),
         axis.text.x = element_text(angle = 90)) +
   facet_wrap(~ outcome, ncol = 3)+
-  theme_reach()
+  theme_reach()+
+  labs(x = "Predicted Probability",
+       y = "Actual Probability",
+       size = "Number of Attempts")
 ```
 
 
@@ -406,7 +411,7 @@ ep_cv_loso_calibration_results %>%
 ### Player Effects Model: Heatmap
 
 ```{r, echo=FALSE, out.width="100%",fig.align='center'}
-knitr::include_graphics("10minutepres_file/pl_all_heatmap.png")
+knitr::include_graphics("10minutepres_files/pl_all_heatmap.png")
 ```
 
 ---
@@ -421,13 +426,18 @@ plot1<- ggplot(all_gl_var)+
   geom_point(aes(x=outcome,y=goalie_var))+
   labs(title="Goalie Variance")+
   theme_reach()+
-  ylim(0,0.06)
+  ylim(0,0.06)+
+  labs(y = "Goalie Variance",
+       x = "Outcome")
+
 
 plot2<- ggplot(all_gl_var)+
   geom_point(aes(x=outcome,y=shooter_var))+
   labs(title="Shooter Variance")+
   theme_reach()+
-  ylim(0,0.06)
+  ylim(0,0.06)+
+  labs(y = "Shooter Variance",
+       x = "Outcome")
 
 gridExtra::grid.arrange(plot1, plot2, nrow = 1)
 
@@ -457,7 +467,10 @@ player_effects %>%
   geom_vline(xintercept = 0, linetype = "dashed",
              color = "red") +
   coord_flip() +
-  theme_bw()
+  theme_bw()+
+  labs(y = "Difference from mean coefficient",
+       x = "Top/bottom 5 goalies/shooters")
+  
 }
 
 ```
@@ -476,24 +489,19 @@ pe(froze_all)
 
 ---
 
-### Compare Baire Score
+### Compare Brier Score
 
 * Multinomial logistic regression Model
 
 ```{r}
-mean(((all_loso_cv_preds2$outcome_type=="Goal")-all_loso_cv_preds2$Goal)^2)+
-mean(((all_loso_cv_preds2$outcome_type=="Rebound")-all_loso_cv_preds2$Rebound)^2)+
-mean(((all_loso_cv_preds2$outcome_type=="GoalieFroze")-all_loso_cv_preds2$GoalieFroze)^2)+
-mean(((all_loso_cv_preds2$outcome_type=="PlayInZone")-all_loso_cv_preds2$PlayInZone)^2)+
-mean(((all_loso_cv_preds2$outcome_type=="Stop")-all_loso_cv_preds2$Stop)^2)+
-mean(((all_loso_cv_preds2$outcome_type=="PlayOutsideZone")-all_loso_cv_preds2$PlayOutsideZone)^2)
+0.7107121
 ```
 
 
 * Random Forest Model
 
 ```{r}
-
+0.7132008
 ```
 
 
