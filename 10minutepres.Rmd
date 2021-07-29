@@ -63,11 +63,6 @@ theme_reach <- function() {
 
 ```{r}
 # Load data
-# shots2020 <- read_csv("data/shots_2020.csv")
-# shots0719 <- read.csv("data/shots_2007-2019.csv")
-
-#load("data/shots1019.RData")
-#load("data/shots2020.RData")
 load("data/recent_season.RData")
 load("data/all_loso_cv_preds2.RData")
 
@@ -276,21 +271,6 @@ knitr::include_graphics("10minutepres_files/rink.png")
 
 ---
 
-### Heatmaps from Multinomial Models
-
-```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("multinom_heatmaps.png")
-```
-
----
-
-### Heatmaps with Legends for Each Column
-
-```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("allconditionslegend_heatmaps.png")
-```
-
----
 
 
 ### All Shots Model: Calibration Plot
@@ -336,7 +316,28 @@ ep_cv_loso_calibration_results %>%
 
 ---
 
+### Heatmaps from Multinomial Models
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("multinom_heatmaps.png")
+```
+
+---
+
+### Heatmaps with Legends for Each Column
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("allconditionslegend_heatmaps.png")
+```
+
+---
+
 ### Random Forest Calibration Plot
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("rf_calibration.png")
+```
+
 
 
 ---
@@ -520,9 +521,12 @@ mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
 
 ### Why is this Useful?
 
-* Can look at specific players and goalies and predict their shot outcomes
+* We are looking at more than just Expected Goals - we are including other outcomes that could occur from a shot
 
-* 
+--
+
+* Continuing this research, would want to look at heatmaps at a goalie / player level - how do goalies and players differ in expected outcomes from "average" goalies/players?
+
 
 
 
