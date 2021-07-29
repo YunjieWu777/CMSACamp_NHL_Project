@@ -336,6 +336,11 @@ ep_cv_loso_calibration_results %>%
 
 ### Random Forest Calibration Plot
 
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("rf_calibration.png")
+```
+
+
 
 ---
 
