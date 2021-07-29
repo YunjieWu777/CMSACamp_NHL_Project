@@ -69,7 +69,21 @@ theme_reach <- function() {
 load("data/shots1019.RData")
 load("data/shots2020.RData")
 load("data/recent_season.RData")
-load("data/all_loso_cv_preds2")
+load("data/all_loso_cv_preds2.RData")
+
+evenstrength <-
+  recent_season %>%
+  filter(xCordAdjusted %in% c(25:89),
+         yCordAdjusted %in% c(-42:42)) %>% 
+  filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
+
+powerplay <-
+   recent_season %>% 
+  filter(xCordAdjusted %in% c(25:89),
+         yCordAdjusted %in% c(-42:42)) %>% 
+  filter((homeSkatersOnIce == 4 & awaySkatersOnIce == 5)|
+           (homeSkatersOnIce == 5 & awaySkatersOnIce == 4))
+
 
 ```
 
@@ -321,6 +335,11 @@ knitr::include_graphics("rf_allheatmaps.png")
 ---
 
 ### Random Forest Heatmaps with Legend
+
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("rflegend_heatmaps.png")
+```
 
 
 ---
