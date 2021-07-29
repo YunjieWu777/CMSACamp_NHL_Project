@@ -122,7 +122,7 @@ powerplay <-
 ## Flow Chat for Shot Outcomes
 
 ````{r, echo=FALSE, fig.align='center',}
-knitr::include_graphics("EDA_0716_files/flow.png")
+knitr::include_graphics("simpleflowchart.png")
 ```
 
 ---
@@ -344,6 +344,17 @@ knitr::include_graphics("rflegend_heatmaps.png")
 
 ---
 
+### Player Effects Model
+
+
+
+---
+
+### Why is this Useful?
+
+* Can look at specific players and goalies and predict their shot outcomes
+
+* 
 
 
 
