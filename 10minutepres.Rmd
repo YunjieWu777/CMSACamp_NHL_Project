@@ -539,4 +539,3 @@ mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
 
 
 
-
