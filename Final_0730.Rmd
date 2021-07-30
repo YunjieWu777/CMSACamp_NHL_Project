@@ -413,6 +413,22 @@ knitr::include_graphics("Final_0730_files/multinom_heatmaps.png")
 
 ---
 
+### Building a Random Forest Model
+
+* Built a random forest model with same predictor variables, response variable still the outcome variable representing all potential outcomes of a shot
+
+--
+
+* Random forest models use many different decision trees to classify observations in groups
+
+--
+
+* Can capture more complex features of a model to give best accuracy
+
+
+
+---
+
 ### Random Forest Calibration Plot
 
 ```{r, echo=FALSE, fig.align='center'}
