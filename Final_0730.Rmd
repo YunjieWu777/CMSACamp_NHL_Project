@@ -610,6 +610,7 @@ mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
 
 --
 
+## Thank you to Brian Macdonald, Sam Ventura, and Ron Yurko for all of their help!!
 
 
 
