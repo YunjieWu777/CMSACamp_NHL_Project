@@ -2,7 +2,7 @@
 title: "Predicting the Outcome of a Shot in the NHL"
 author: 
   - "Claire Dudley, Ruby Wu"
-date: "July 29th, 2021"
+date: "July 30th, 2021"
 output: 
   xaringan::moon_reader:
     css: xaringan-themer.css
@@ -117,7 +117,7 @@ powerplay <-
 ## Flow Chat for Shot Outcomes
 
 ````{r, echo=FALSE, fig.align='center',}
-knitr::include_graphics("10minutepres_files/simpleflowchart.png")
+knitr::include_graphics("Final_0730_files/simpleflowchart.png")
 ```
 
 ---
@@ -179,7 +179,7 @@ recent_season %>% slice_head(n = 4) %>% dplyr::select(season,awaySkatersOnIce,sh
 - Shot rush: Set to 1 if the last event was in another zone and within 4 seconds of this shot
 
 ```{r, echo=FALSE, out.width="40%",fig.align='center'}
-knitr::include_graphics("10minutepres_files/rink.png")
+knitr::include_graphics("Final_0730_files/rink.png")
 ```
 
 ---
@@ -232,7 +232,7 @@ ep_cv_loso_calibration_results %>%
 ### Heatmaps from Multinomial Models
 
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("allconditionslegend_heatmaps.png")
+knitr::include_graphics("Final_0730_files/allconditionslegend_heatmaps.png")
 ```
 
 ---
@@ -240,7 +240,7 @@ knitr::include_graphics("allconditionslegend_heatmaps.png")
 ### Heatmaps from Multinomial Models
 
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("multinom_heatmaps.png")
+knitr::include_graphics("Final_0730_files/multinom_heatmaps.png")
 ```
 
 
@@ -249,7 +249,7 @@ knitr::include_graphics("multinom_heatmaps.png")
 ### Random Forest Calibration Plot
 
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("rf_calibration.png")
+knitr::include_graphics("Final_0730_files/rf_calibration.png")
 ```
 
 
@@ -260,7 +260,7 @@ knitr::include_graphics("rf_calibration.png")
 
 
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("rflegend_heatmaps.png")
+knitr::include_graphics("Final_0730_files/rflegend_heatmaps.png")
 ```
 
 
@@ -270,7 +270,7 @@ knitr::include_graphics("rflegend_heatmaps.png")
 ### Random Forest Heatmaps
 
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("rf_allheatmaps.png")
+knitr::include_graphics("Final_0730_files/rf_allheatmaps.png")
 ```
 
 
@@ -341,7 +341,7 @@ ep_cv_loso_calibration_results %>%
 ### Player Effects Model: Heatmap
 
 ```{r, echo=FALSE, out.width="100%",fig.align='center'}
-knitr::include_graphics("10minutepres_files/pl_all_heatmap.png")
+knitr::include_graphics("Final_0730_files/pl_all_heatmap.png")
 ```
 
 ---
@@ -424,10 +424,6 @@ mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
 * Continuing this research, would want to look at heatmaps at a goalie / player level - how do goalies and players differ in expected outcomes from "average" goalies/players?
 
 --
-
-#### If you have any questions you are welcome to come to the Q&A session at 3 to 4 on July 30th!
-
-
 
 
 
