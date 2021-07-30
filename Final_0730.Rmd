@@ -68,14 +68,10 @@ load("data/all_loso_cv_preds2.RData")
 
 evenstrength <-
   recent_season %>%
-  filter(xCordAdjusted %in% c(25:89),
-         yCordAdjusted %in% c(-42:42)) %>% 
   filter(homeSkatersOnIce==5 & awaySkatersOnIce==5)
 
 powerplay <-
    recent_season %>% 
-  filter(xCordAdjusted %in% c(25:89),
-         yCordAdjusted %in% c(-42:42)) %>% 
   filter((homeSkatersOnIce == 4 & awaySkatersOnIce == 5)|
            (homeSkatersOnIce == 5 & awaySkatersOnIce == 4))
 
@@ -116,7 +112,7 @@ powerplay <-
 
 ## Flow Chat for All Shot Outcomes
 
-````{r, echo=FALSE, fig.align='center',}
+````{r, echo=FALSE, fig.align='center',out.width="100%"}
 knitr::include_graphics("Final_0730_files/simpleflowchart.png")
 ```
 
@@ -124,15 +120,15 @@ knitr::include_graphics("Final_0730_files/simpleflowchart.png")
 
 ## Flow Chart for Shots on Net
 
-````{r, echo=FALSE, fig.align='center',}
+````{r, echo=FALSE, fig.align='center',out.width="100%"}
 knitr::include_graphics("Final_0730_files/ongoal_flowchart.png")
 ```
 
 ---
 
-## Flow Chart for Shots Missing Net
+## Flow Chart for Shots Miss the Net
 
-````{r, echo=FALSE, fig.align='center',}
+````{r, echo=FALSE, fig.align='center',out.width="100%"}
 knitr::include_graphics("Final_0730_files/missnet_flowchart.png")
 ```
 
@@ -187,9 +183,6 @@ recent_season %>%
             bin_actual_prob = mean(goal)) %>%
   ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) + 
   geom_point(aes(size = n_attempts)) + 
-  geom_text(aes(label = n_attempts),
-            position = position_nudge(x = 0.05, y = -0.05),
-            size = 4)+
   geom_smooth(method = "loess", se = FALSE) + 
   geom_abline(intercept = 0, slope = 1, color = "darkred",
               linetype = "dashed") + 
@@ -207,7 +200,7 @@ recent_season %>%
 
 ---
 
-## Calibration on subsets: situation
+### Calibration on subsets: situation
 
 
 ```{r out.width = "50%"}
@@ -219,9 +212,6 @@ evenstrength %>%
             bin_actual_prob = mean(goal)) %>%
   ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) + 
   geom_point(aes(size = n_attempts)) + 
-  geom_text(aes(label = n_attempts),
-            position = position_nudge(x = 0.05, y = -0.05),
-            size = 4) +
   geom_smooth(method = "loess", se = FALSE) + 
   geom_abline(intercept = 0, slope = 1, color = "darkred",
               linetype = "dashed") + 
@@ -241,9 +231,6 @@ powerplay %>%
             bin_actual_prob = mean(goal)) %>%
   ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) + 
   geom_point(aes(size = n_attempts)) + 
-  geom_text(aes(label = n_attempts),
-            position = position_nudge(x = 0.07, y = -0.02),
-            size = 4) +
   geom_smooth(method = "loess", se = FALSE) + 
   geom_abline(intercept = 0, slope = 1, color = "darkred",
               linetype = "dashed") + 
@@ -262,13 +249,19 @@ powerplay %>%
 
 ### Start from Individual Binomial Logistic Regression Models
 
-* Build 7 simple logistic regression models, one for each outcome and another one for weather the shot was on goal
+* Looked at more than just Expected Goals - including other outcomes that could occur from a shot; build 7 simple logistic regression models, one for each outcome and another one for whether the shot was on goal
 
-* Response variables
+--
 
-* Our predictor variables were: shot distance, shot angle, shot type, shot rebound, shot rush
+* Response variables: one column for each outcome from the original data
 
-* Looked at shots only taken in even strength situations; meaning, 5 players on the ice for both teams
+--
+
+* Predictor variables: shot distance, shot angle, shot type, shot rebound, shot rush
+
+--
+
+* Looked at shots only taken in even-strength situations; meaning, 5 players on the ice for both teams
 
 ---
 
@@ -286,17 +279,9 @@ knitr::include_graphics("Final_0730_files/rink.png")
 
 ---
 
-
-
-```{r}
-#Have a quick understnad about how each preditor influcen the outcome and then switch to multinomial approach
-```
-
-
-
 ### Building a Multinomial Logistic Regression Model
 
-* Looked at more than just Expected Goals - including other outcomes that could occur from a shot; Created an new column representing the "outcome" of a shot, this was our response variable
+* Created an new column representing the "outcome" of a shot, this was our response variable
 
 --
 
@@ -304,52 +289,16 @@ knitr::include_graphics("Final_0730_files/rink.png")
 
 --
 
-* Built 3 models: all shots, on goal, and miss net conditions; focus on all shots condition in this video
+* Built 3 models: all shots, on goal, and miss net conditions; focus on all shots condition right now
 
 ---
 
 
-## Multinomial Logistic Model
+### Coefficient for Multinomial Logistic Models
 
-```{r include = FALSE}
-multi <- recent_season %>% 
-  filter(!is.na(shotType),
-         shotType!="",
-         homeSkatersOnIce==5 & awaySkatersOnIce==5)
-
-
-# 21 observation that is both goal and froze, 5 NA shotType and 164 "" shotType
-# for 2 of 164 "", all 6 outcomes are 0.
-
-multi<-multi %>% 
-  mutate(outcome=case_when(shotGoalieFroze==1 ~ "GoalieFroze",
-                           goal==1 ~"Goal",
-                           shotGeneratedRebound == 1 ~ "GeneratesRebound",
-                           shotPlayContinuedInZone == 1 ~ "PlayInZone",
-                           shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
-                           shotPlayStopped == 1 ~ "PlayStopped"))
-
-multi$outcome <- relevel(as.factor(multi$outcome),ref="Goal")
-multi$shotType <- as.factor(multi$shotType)
-
-
-multi_mo <- multinom(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound, 
-                     data = multi,
-                     model=TRUE)
+````{r, echo=FALSE, out.width="95%", fig.align='center'}
+knitr::include_graphics("Final_0730_files/multi_coe.png")
 ```
-
-```{r coe_plot, fig.align="center"}
-multi_coe %>%
-  ggplot(aes(x = outcome, y = variable)) +
-  geom_tile(aes(fill = value), color = "black") +
-  geom_text(aes(label=round(value, digits = 4)),
-            size=3,color = "black") +
-  scale_x_discrete(position = "top")+
-  scale_fill_distiller(palette='RdBu',direction=-1, limits=c(-1.2,1.2))+
-  theme_reach()+
-  labs(title="Coefficient for Multinomial Logistic Model")
-```
-
 ---
 
 
@@ -425,8 +374,6 @@ knitr::include_graphics("Final_0730_files/multinom_heatmaps.png")
 
 * Can capture more complex features of a model to give best accuracy
 
-
-
 ---
 
 ### Random Forest Calibration Plot
@@ -434,8 +381,6 @@ knitr::include_graphics("Final_0730_files/multinom_heatmaps.png")
 ```{r, echo=FALSE, fig.align='center'}
 knitr::include_graphics("Final_0730_files/rf_calibration.png")
 ```
-
-
 
 ---
 
@@ -477,47 +422,9 @@ knitr::include_graphics("Final_0730_files/rf_allheatmaps.png")
 
 ### Player Effects Model: Calibration Plot
 
-```{r fig.align='center',out.width="75%"}
-
-load("data/all_gl.RData")
-
-ep_cv_loso_calibration_results <- all_gl %>%
-  pivot_longer(PlayOutsideZone:Stop,
-               names_to = "outcome",
-               values_to = "pred_prob") %>%
-  mutate(bin_pred_prob = round(pred_prob / 0.05) * 0.05) %>% 
-  group_by(outcome, bin_pred_prob) %>%
-  summarize(n_plays = n(),
-            n_scoring_event = length(which(outcome_type == outcome)),
-            bin_actual_prob = n_scoring_event / n_plays,
-            bin_se = sqrt((bin_actual_prob * (1 - bin_actual_prob)) / n_plays)) %>%
-  ungroup() %>%
-  mutate(bin_upper = pmin(bin_actual_prob + 2 * bin_se, 1),
-         bin_lower = pmax(bin_actual_prob - 2 * bin_se, 0))
-
-
-ep_cv_loso_calibration_results %>%
-  ggplot(aes(x = bin_pred_prob, y = bin_actual_prob)) +
-  geom_abline(slope = 1, intercept = 0, color = "black", linetype = "dashed") +
-  geom_smooth(se = FALSE) +
-  geom_point(aes(size = n_plays)) +
-  geom_errorbar(aes(ymin = bin_lower, ymax = bin_upper)) + 
-  coord_equal() +
-  scale_x_continuous(limits = c(0, 1)) +
-  scale_y_continuous(limits = c(0, 1)) +
-  theme_bw() +
-  theme(legend.position = c(1, .05),
-        legend.justification = c(1, 0),
-        strip.background = element_blank(),
-        axis.text.x = element_text(angle = 90)) +
-  facet_wrap(~ outcome, ncol = 3)+
-  theme_reach()+
-  labs(x = "Predicted Probability",
-       y = "Actual Probability",
-       size = "Number of Attempts")
+```{r, echo=FALSE, out.width="90%",fig.align='center'}
+knitr::include_graphics("Final_0730_files/player_cal.png")
 ```
-
-
 
 ---
 
@@ -531,44 +438,15 @@ knitr::include_graphics("Final_0730_files/pl_all_heatmap.png")
 
 ### Top/bottom 5 goalies/shooters for rebound 
 
-```{r}
-rebound_all<-read_rds("model/rebound_all.rds")
-froze_all<-read_rds("model/froze_all.rds")
-
-pe<- function(x){
-player_effects <- REsim(x)
-
-player_effects %>%
-  as_tibble() %>%
-  group_by(groupFctr) %>%
-  arrange(desc(mean)) %>%
-  slice(1:5, (n() - 4):n()) %>%
-  ggplot(aes(x = reorder(groupID, mean))) +
-  geom_point(aes(y = mean)) +
-  geom_errorbar(aes(ymin = mean - 2 * sd,
-                    ymax = mean + 2 * sd)) +
-  facet_wrap(~groupFctr, ncol = 1, scales = "free_y") +
-  geom_vline(xintercept = 0, linetype = "dashed",
-             color = "red") +
-  coord_flip() +
-  theme_bw()+
-  labs(y = "Difference from mean coefficient",
-       x = "Top/bottom 5 goalies/shooters")
-  
-}
-
-```
-
-
-```{r, echo=FALSE, out.width="60%",fig.align='center'}
-pe(rebound_all)
+```{r, echo=FALSE, out.width="90%",fig.align='center'}
+knitr::include_graphics("Final_0730_files/rebound_player.png")
 ```
 
 ---
 ### Top/bottom 5 goalies/shooters for froze 
 
-```{r, echo=FALSE, out.width="60%",fig.align='center'}
-pe(froze_all)
+```{r, echo=FALSE, out.width="90%",fig.align='center'}
+knitr::include_graphics("Final_0730_files/froze_player.png")
 ```
 
 ---
@@ -592,12 +470,7 @@ pe(froze_all)
 * Individual binomial logistic regression model with player effects
 
 ```{r}
-mean(((all_gl$outcome_type=="Goal")-all_gl$Goal)^2)+
-mean(((all_gl$outcome_type=="Rebound")-all_gl$Rebound)^2)+
-mean(((all_gl$outcome_type=="GoalieFroze")-all_gl$GoalieFroze)^2)+
-mean(((all_gl$outcome_type=="PlayInZone")-all_gl$PlayInZone)^2)+
-mean(((all_gl$outcome_type=="Stop")-all_gl$Stop)^2)+
-mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
+0.6442002
 ```
 
 ---
@@ -606,11 +479,17 @@ mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
 
 * Generalize our result to situation other than evenstrength; keep working on other two conditions.
 
+--
+
 * Continuing this research, would want to look at heatmaps at a goalie / player level - how do goalies and players differ in expected outcomes from "average" goalies/players?
 
 --
 
-## Thank you to Brian Macdonald, Sam Ventura, and Ron Yurko for all of their help!!
+#### Thank you to Brian Macdonald, Sam Ventura, and Ron Yurko for all of their help!!
+
+--
+
+#### Feel free to ask any questions!
 
 
 

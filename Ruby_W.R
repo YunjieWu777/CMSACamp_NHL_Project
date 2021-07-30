@@ -256,3 +256,55 @@ test_rrr <- exp(coef(test))
 
 
 
+load("data/recent_season.RData")
+
+multi <- recent_season %>% 
+  filter(!is.na(shotType),
+         shotType!="",
+         homeSkatersOnIce==5 & awaySkatersOnIce==5)
+
+
+multi<-multi %>% 
+  mutate(outcome=case_when(shotGoalieFroze==1 ~ "GoalieFroze",
+                           goal==1 ~"Goal",
+                           shotGeneratedRebound == 1 ~ "GeneratesRebound",
+                           shotPlayContinuedInZone == 1 ~ "PlayInZone",
+                           shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
+                           shotPlayStopped == 1 ~ "PlayStopped"))
+
+multi$outcome <- relevel(as.factor(multi$outcome),ref="Goal")
+multi$shotType <- as.factor(multi$shotType)
+
+
+multi_mo <- multinom(outcome ~ shotAngleAdjusted+arenaAdjustedShotDistance+shotType+shotRush+shotRebound, 
+                     data = multi,
+                     model=TRUE)
+
+multi_coe<-data.frame(summary(multi_mo)$coefficients) %>% 
+  dplyr::select(2:11)
+
+
+multi_coe<-multi_coe%>% 
+  mutate(outcome=rownames(multi_coe)) %>% 
+  pivot_longer(multi_mo$vcoefnames[2:11],names_to = "variable")
+
+save(multi_coe,file="data/multi_coe_new.RData")
+
+load("data/multi_coe_new.RData")
+
+library(tidyverse)
+
+multi_coe %>%
+  ggplot(aes(x = outcome, y = variable)) +
+  geom_tile(aes(fill = value), color = "black") +
+  geom_text(aes(label=round(value, digits = 4)),
+            size=3,color = "black") +
+  scale_x_discrete(position = "top")+
+  theme_reach()+
+  scale_fill_distiller(palette='RdBu',direction=-1, limits=c(-1.2,1.2))+
+  labs(title="Coefficient for Multinomial Logistic Models")+
+  theme(plot.title = element_text(hjust = 0))
+
+png(file="Final_0730_files/multi_coe.png")
+
+?png

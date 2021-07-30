@@ -560,3 +560,123 @@ pe(stop_all)
 
 
 g+ theme_bw()
+
+load("data/all_loso_cv_preds2.RData")
+
+mean(((all_loso_cv_preds2$outcome=="Goal")-all_loso_cv_preds2$Goal)^2)+
+  mean(((all_loso_cv_preds2$outcome=="GeneratesRebound")-all_loso_cv_preds2$GeneratesRebound)^2)+
+  mean(((all_loso_cv_preds2$outcome=="GoalieFroze")-all_loso_cv_preds2$GoalieFroze)^2)+
+  mean(((all_loso_cv_preds2$outcome=="PlayInZone")-all_loso_cv_preds2$PlayInZone)^2)+
+  mean(((all_loso_cv_preds2$outcome=="PlayStopped")-all_loso_cv_preds2$PlayStopped)^2)+
+  mean(((all_loso_cv_preds2$outcome=="PlayOutsideZone")-all_loso_cv_preds2$PlayOutsideZone)^2)
+
+library(tidyverse)
+load("data/shots2020.RData")
+load("data/all_gl.RData")
+shots2020<-shots2020 %>% 
+  filter(shotWasOnGoal==1)
+
+a<- all_gl$PlayOutsideZone+all_gl$Rebound+all_gl$Goal+all_gl$GoalieFroze+all_gl$PlayInZone+all_gl$Stop
+max(a)
+
+
+a<-shots2020$xGoal+shots2020$xFroze+shots2020$xPlayContinuedInZone+shots2020$xPlayStopped+shots2020$xPlayContinuedOutsideZone+shots2020$xRebound
+
+mean(a)
+
+hist(a)
+
+shots2020<-shots2020 %>% 
+  filter(xGoal+xFroze+xPlayContinuedInZone+xPlayStopped+xPlayContinuedOutsideZone+xRebound > 0.9)
+
+
+
+
+which.min(a)
+
+a<-shots2020[1035,]
+
+which.max(a)
+
+
+min(a)
+max(a)
+
+a<-mean((shots2020$goal-shots2020$xGoal)^2)+
+  mean((shots2020$shotGeneratedRebound-shots2020$xRebound)^2)+
+  mean((shots2020$shotGoalieFroze-shots2020$xFroze)^2)+
+  mean((shots2020$shotPlayContinuedInZone -shots2020$xPlayContinuedInZone)^2)+
+  mean((shots2020$shotPlayContinuedOutsideZone-shots2020$xPlayContinuedOutsideZone)^2)+
+    mean((shots2020$shotPlayStopped-shots2020$xPlayStopped)^2)
+
+
+
+
+
+# Test for test data
+
+load("data/recent_season.RData")
+
+recent_season <-recent_season %>% 
+  filter(!is.na(shooterPlayerId), 
+         !is.na(goalieNameForShot),
+         !is.na(shotType),
+         shotType!="",
+         homeSkatersOnIce==5 & awaySkatersOnIce==5) %>% 
+  mutate(shooter_name_id = paste0(shooterName, "-", shooterPlayerId),
+         goalie_name_id = paste0(goalieNameForShot, "-", goalieIdForShot),
+         outcome_type=case_when(shotGoalieFroze==1 ~ "GoalieFroze",
+                                goal==1 ~"Goal",
+                                shotGeneratedRebound == 1 ~ "GeneratesRebound",
+                                shotPlayContinuedInZone == 1 ~ "PlayInZone",
+                                shotPlayContinuedOutsideZone == 1 ~ "PlayOutsideZone",
+                                shotPlayStopped == 1 ~ "PlayStopped"))
+
+recent_season<-recent_season %>% 
+  mutate(outcome_type = relevel(as.factor(outcome_type),ref="PlayOutsideZone"),
+         shotType=as.factor(shotType),
+         shotRush=as.factor(shotRush),
+         shotRebound=as.factor(shotRebound),
+         goalie_name_id=as.factor(goalie_name_id),
+         shooter_name_id=as.factor(shooter_name_id),
+         outcome = as.integer(outcome_type) -1,
+         angle_org = shotAngleAdjusted,
+         distance_org = arenaAdjustedShotDistance,
+         arenaAdjustedShotDistance=scale(arenaAdjustedShotDistance),
+         shotAngleAdjusted=scale(shotAngleAdjusted))
+
+recent_season<- recent_season %>% sample_frac(0.1) %>% 
+  filter(xCordAdjusted %in% c(25:89),
+         yCordAdjusted %in% c(-42:42))
+
+rebound_all<-read_rds("model/rebound_all.rds")
+goal_all<-read_rds("model/goal_all.rds")
+froze_all<-read_rds("model/froze_all.rds")
+inZone_all<-read_rds("model/inZone_all.rds")
+stop_all<-read_rds("model/stop_all.rds")
+
+
+all_gl<- tibble(rebound_all = exp(predict(rebound_all,newdata=recent_season, type = "link",allow.new.levels = TRUE)),
+                goal_all = exp(predict(goal_all,newdata=recent_season, type = "link",allow.new.levels = TRUE)),
+                froze_all = exp(predict(froze_all,newdata=recent_season, type = "link",allow.new.levels = TRUE)),
+                inZone_all = exp(predict(inZone_all,newdata=recent_season, type = "link",allow.new.levels = TRUE)),
+                stop_all = exp(predict(stop_all,newdata=recent_season, type = "link",allow.new.levels = TRUE))) 
+
+all_gl<- all_gl %>% 
+  mutate(PlayOutsideZone=1/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         Rebound=rebound_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         Goal= goal_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         GoalieFroze=froze_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         PlayInZone=inZone_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all),
+         Stop=stop_all/(1+rebound_all+goal_all+froze_all+inZone_all+stop_all))
+
+all_gl<-cbind(all_gl,recent_season[,15:16],recent_season[,27])
+colnames(all_gl)[14]<-"outcome_type"
+
+
+a<-mean(((all_gl$outcome_type=="Goal")-all_gl$Goal)^2)+
+  mean(((all_gl$outcome_type=="Rebound")-all_gl$Rebound)^2)+
+  mean(((all_gl$outcome_type=="GoalieFroze")-all_gl$GoalieFroze)^2)+
+  mean(((all_gl$outcome_type=="PlayInZone")-all_gl$PlayInZone)^2)+
+  mean(((all_gl$outcome_type=="Stop")-all_gl$Stop)^2)+
+  mean(((all_gl$outcome_type=="PlayOutsideZone")-all_gl$PlayOutsideZone)^2)
