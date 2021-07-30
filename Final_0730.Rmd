@@ -114,10 +114,26 @@ powerplay <-
 
 ---
 
-## Flow Chat for Shot Outcomes
+## Flow Chat for All Shot Outcomes
 
 ````{r, echo=FALSE, fig.align='center',}
 knitr::include_graphics("Final_0730_files/simpleflowchart.png")
+```
+
+---
+
+## Flow Chart for Shots on Net
+
+````{r, echo=FALSE, fig.align='center',}
+knitr::include_graphics("Final_0730_files/ongoal_flowchart.png")
+```
+
+---
+
+## Flow Chart for Shots Missing Net
+
+````{r, echo=FALSE, fig.align='center',}
+knitr::include_graphics("Final_0730_files/missnet_flowchart.png")
 ```
 
 ---
