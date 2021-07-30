@@ -14,6 +14,7 @@ grViz(diagram = "digraph flowchart {
       tab5 [label = '@@5']
       tab6 [label = '@@6']
       tab7 [label = '@@7']
+<<<<<<< HEAD
       tab8 [label = '@@7']
       
       
@@ -36,6 +37,24 @@ grViz(diagram = "digraph flowchart {
       [6]: 'Play Continued in Zone'
       [7]: 'Play Continued Outside Zone'
       [8]: 'Stoppage of Play'
+=======
+      
+      tab1 -> tab2;
+      tab1 -> tab3;
+      tab1 -> tab4;
+      tab1 -> tab5;
+      tab1 -> tab6;
+      tab1 -> tab7;
+}
+      
+      [1]: 'Shot Attempt'
+      [2]: 'Goal'
+      [3]: 'Shot Generates Rebound'
+      [4]: 'Goalie Froze Puck'
+      [5]: 'Play Continued in Zone'
+      [6]: 'Play Continued Outside Zone'
+      [7]: 'Stoppage of Play'
+>>>>>>> 86412d65f22755056ce39047462837682f60c3f3
       
       ")
 
