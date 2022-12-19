@@ -1,18 +1,34 @@
-CMU CMSACamp_NHL_Project
+# Predicting Shot Outcomes in the National Hockey League (NHL)
 
-Predicting Shot Outcomes in the NHL (external partners: Sam Ventura, Brian Macdonald; program professor: Ron Yurko)
+## Introduction
 
-Claire Dudley, St. Lawrence University, Statistics and Psychology
-Ruby Wu, Emory University, Computer Science and Quantitative Science (emphasis in Psychology)
+This is the code for the summer reserach project of CMU 2021 CMSACamp
 
-2021.06.01 -- 2021.07.30
+- We built ML models including multinomial logistic regression and random forest using R to predict possible outcomes of a shot in NHL and investigated the impact of individual players as a contributing factor
+
+- A video summarizing our work can be found in this [offical website](http://www.stat.cmu.edu/cmsac/summer2021/) and is also embedded below
 
 
-Related Resources:
+
+https://user-images.githubusercontent.com/85247180/208427838-9c50acf1-c086-42eb-8bce-1e7882364ec6.mp4
+
+
+
+
+## Contributors
+
+- Yunjie(Ruby) Wu, Emory University [@yunjiewu777](https://github.com/yunjiewu777)
+- Claire Dudley, St. Lawrence University [@cedudley18](https://github.com/cedudley18)
+
+### External partners
+
+- Sam Ventura
+- Brian Macdonald
+
+### Program professor
+- Ron Yurko
+
+
+## Related Resources
+
 Lacture & Lab: http://stat.cmu.edu/cmsac/sure/2021/materials/
-Slack: https://app.slack.com/client/T023ERZK0GY/C022J8ZH05C
-Showcase: http://www.stat.cmu.edu/cmsac/summer2021/ (the 10-minute vedio and ppt)
-
-Tips:
-I change the organization at last, so some rmd files may not be able to be successfully knitted. You need to check the directory and find the document.
-All pictures are in "nameXXX_files." All data is in "Data" file, and all R models are in "Model" file.
