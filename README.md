@@ -12,7 +12,7 @@ This is the code for the summer reserach project of CMU 2021 CMSACamp
 
 https://user-images.githubusercontent.com/85247180/208427838-9c50acf1-c086-42eb-8bce-1e7882364ec6.mp4
 
-
+- Note: Due to the final cleaning up, some HTML/RMD files cannot be successfully knitted. You may need to find the corresponding file in [Unorganized Files](https://github.com/yunjiewu777/predict-NHL-shot-outcome/tree/main/Unorganized_files)
 
 
 ## Contributors
